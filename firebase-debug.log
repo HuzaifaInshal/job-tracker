@@ -1,0 +1,40 @@
+[debug] [2026-04-18T12:10:57.619Z] ----------------------------------------------------------------------
+[debug] [2026-04-18T12:10:57.621Z] Command:       /home/huzaifa/.nvm/versions/node/v24.14.1/bin/node /home/huzaifa/.nvm/versions/node/v24.14.1/bin/firebase login:ci
+[debug] [2026-04-18T12:10:57.622Z] CLI Version:   15.15.0
+[debug] [2026-04-18T12:10:57.622Z] Platform:      linux
+[debug] [2026-04-18T12:10:57.622Z] Node Version:  v24.14.1
+[debug] [2026-04-18T12:10:57.622Z] Time:          Sat Apr 18 2026 17:10:57 GMT+0500 (Pakistan Standard Time)
+[debug] [2026-04-18T12:10:57.622Z] ----------------------------------------------------------------------
+[debug] 
+[warn] ⚠  Authenticating with a `login:ci` token is deprecated and will be removed in a future major version of `firebase-tools`. Instead, use a service account key with `GOOGLE_APPLICATION_CREDENTIALS`: https://cloud.google.com/docs/authentication/getting-started 
+[info] 
+[info] Visit this URL on this device to log in:
+[info] https://accounts.google.com/o/oauth2/auth?client_id=563584335869-fgrhgmd47bqnekij5i8b5pr03ho849e6.apps.googleusercontent.com&scope=email%20openid%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloudplatformprojects.readonly%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Ffirebase%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fcloud-platform&response_type=code&state=756371352&redirect_uri=http%3A%2F%2Flocalhost%3A9005
+[info] 
+[info] Waiting for authentication...
+[debug] [2026-04-18T12:11:09.401Z] >>> [apiv2][query] POST https://accounts.google.com/o/oauth2/token [none]
+[debug] [2026-04-18T12:11:09.401Z] >>> [apiv2][body] POST https://accounts.google.com/o/oauth2/token [omitted]
+[debug] [2026-04-18T12:11:09.678Z] *** [apiv2] error from fetch(https://accounts.google.com/o/oauth2/token, {"headers":{},"method":"POST","body":{"_overheadLength":543,"_valueLength":208,"_valuesToMeasure":[],"writable":false,"readable":true,"dataSize":0,"maxDataSize":2097152,"pauseStreams":true,"_released":true,"_streams":[],"_currentStream":null,"_insideLoop":false,"_pendingNext":false,"_boundary":"--------------------------8ee9961fdc82b6be8e2d8229","_events":{},"_eventsCount":1}}): FetchError: request to https://accounts.google.com/o/oauth2/token failed, reason: 
+[debug] [2026-04-18T12:11:09.678Z] Token Fetch Error: FirebaseError: Failed to make request to https://accounts.google.com/o/oauth2/token
+    at RetryOperation._fn (/home/huzaifa/.nvm/versions/node/v24.14.1/lib/node_modules/firebase-tools/lib/apiv2.js:282:31)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+[error] Authentication Error: Your credentials are no longer valid. Please run firebase login --reauth
+
+For CI servers and headless environments, generate a new token with firebase login:ci
+[debug] [2026-04-18T12:11:09.689Z] >>> [apiv2][query] POST https://auth.firebase.tools/attest [none]
+[debug] [2026-04-18T12:11:09.689Z] >>> [apiv2][body] POST https://auth.firebase.tools/attest {"session_id":"ce20689e-23af-4a87-87e9-0c4676d7cf6f"}
+[debug] [2026-04-18T12:11:10.361Z] <<< [apiv2][status] POST https://auth.firebase.tools/attest 200
+[debug] [2026-04-18T12:11:10.362Z] <<< [apiv2][body] POST https://auth.firebase.tools/attest {"token":"jPZgeLiidbpAP6hHtZf_T3yOd7055ruWMKDCjqrI_KI"}
+[info] 
+[info] To sign in to the Firebase CLI:
+[info] 
+[info] 1. Take note of your session ID:
+[info] 
+[info]    CE206
+[info] 
+[info] 2. Visit the URL below on any device and follow the instructions to get your code:
+[info] 
+[info]    https://auth.firebase.tools/login?code_challenge=GMjoU7yXKeok-6Zfk0rDBCaCKSBVj_GKAmh051_vVok&session=ce20689e-23af-4a87-87e9-0c4676d7cf6f&attest=jPZgeLiidbpAP6hHtZf_T3yOd7055ruWMKDCjqrI_KI
+[info] 
+[info] 3. Paste or enter the authorization code below once you have it:
+[info] 
