@@ -102,22 +102,23 @@ export function AddApplicationModal({
         jobTitle: form.jobTitle.trim(),
         channel: form.channel as ApplicationChannel,
         channelOther:
-          form.channel === "other" ? form.channelOther.trim() : undefined,
+          form.channel === "other" ? form.channelOther.trim() : null,
         applyType: form.applyType as ApplyType,
         applyTypeOther:
-          form.applyType === "other" ? form.applyTypeOther.trim() : undefined,
+          form.applyType === "other" ? form.applyTypeOther.trim() : null,
         appliedAt: new Date(form.appliedAt),
-        contactLink: form.contactLink.trim() || undefined,
+        contactLink: form.contactLink.trim() || null,
         postedBy: form.postedBy as PostedBy,
-        hrCompanyName: form.hrCompanyName.trim() || undefined,
-        hrCompanyLink: form.hrCompanyLink.trim() || undefined,
-        socialPostLink: form.socialPostLink.trim() || undefined,
-        extraNotes: form.extraNotes.trim() || undefined,
+        hrCompanyName: form.hrCompanyName.trim() || null,
+        hrCompanyLink: form.hrCompanyLink.trim() || null,
+        socialPostLink: form.socialPostLink.trim() || null,
+        extraNotes: form.extraNotes.trim() || null,
         status: "pending"
       });
       toast("Application added successfully!");
       handleClose();
-    } catch {
+    } catch (e) {
+      console.log("e", e);
       toast("Failed to save application.", "error");
     } finally {
       setSaving(false);

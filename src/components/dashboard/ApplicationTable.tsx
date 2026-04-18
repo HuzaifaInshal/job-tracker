@@ -1,111 +1,213 @@
-'use client';
+"use client";
 
-import { useState, useMemo } from 'react';
-import { ApplicationSheet } from './ApplicationSheet';
-import { AddApplicationModal } from './AddApplicationModal';
-import { StatusBadge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { useState, useMemo } from "react";
+import { ApplicationSheet } from "./ApplicationSheet";
+import { AddApplicationModal } from "./AddApplicationModal";
+import { StatusBadge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
-  STATUS_LABELS, CHANNEL_LABELS, APPLY_TYPE_LABELS,
-  type Application, type ApplicationStatus, type ApplicationChannel, type ApplyType,
-} from '@/lib/types';
-import { formatDate } from '@/lib/utils';
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select";
 import {
-  Search, Plus, ArrowUpDown, ArrowUp, ArrowDown,
-  Briefcase, Building2, SlidersHorizontal, X,
-  ChevronLeft, ChevronRight,
-} from 'lucide-react';
+  STATUS_LABELS,
+  CHANNEL_LABELS,
+  APPLY_TYPE_LABELS,
+  type Application,
+  type ApplicationStatus,
+  type ApplicationChannel,
+  type ApplyType
+} from "@/lib/types";
+import { formatDate } from "@/lib/utils";
+import {
+  Search,
+  Plus,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Briefcase,
+  Building2,
+  SlidersHorizontal,
+  X,
+  ChevronLeft,
+  ChevronRight
+} from "lucide-react";
 
-type SortField = 'appliedAt' | 'companyName' | 'status' | 'jobTitle';
-type SortDir = 'asc' | 'desc';
+type SortField = "appliedAt" | "companyName" | "status" | "jobTitle";
+type SortDir = "asc" | "desc";
 const PAGE_SIZE = 15;
 
-interface Props { applications: Application[]; loading: boolean; userId: string }
+interface Props {
+  applications: Application[];
+  loading: boolean;
+  userId: string;
+}
 
 export function ApplicationTable({ applications, loading, userId }: Props) {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | 'all'>('all');
-  const [channelFilter, setChannelFilter] = useState<ApplicationChannel | 'all'>('all');
-  const [applyTypeFilter, setApplyTypeFilter] = useState<ApplyType | 'all'>('all');
-  const [dateFrom, setDateFrom] = useState('');
-  const [dateTo, setDateTo] = useState('');
-  const [sortField, setSortField] = useState<SortField>('appliedAt');
-  const [sortDir, setSortDir] = useState<SortDir>('desc');
+  const [search, setSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState<ApplicationStatus | "all">(
+    "all"
+  );
+  const [channelFilter, setChannelFilter] = useState<
+    ApplicationChannel | "all"
+  >("all");
+  const [applyTypeFilter, setApplyTypeFilter] = useState<ApplyType | "all">(
+    "all"
+  );
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [sortField, setSortField] = useState<SortField>("appliedAt");
+  const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
 
-  function openApp(app: Application) { setSelectedApp(app); setSheetOpen(true); }
+  function openApp(app: Application) {
+    setSelectedApp(app);
+    setSheetOpen(true);
+  }
 
   function toggleSort(field: SortField) {
-    if (sortField === field) setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'));
-    else { setSortField(field); setSortDir('desc'); }
+    if (sortField === field) setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    else {
+      setSortField(field);
+      setSortDir("desc");
+    }
     setPage(1);
   }
 
   function clearFilters() {
-    setSearch(''); setStatusFilter('all'); setChannelFilter('all');
-    setApplyTypeFilter('all'); setDateFrom(''); setDateTo(''); setPage(1);
+    setSearch("");
+    setStatusFilter("all");
+    setChannelFilter("all");
+    setApplyTypeFilter("all");
+    setDateFrom("");
+    setDateTo("");
+    setPage(1);
   }
 
-  const hasFilters = search || statusFilter !== 'all' || channelFilter !== 'all' || applyTypeFilter !== 'all' || dateFrom || dateTo;
+  const hasFilters =
+    search ||
+    statusFilter !== "all" ||
+    channelFilter !== "all" ||
+    applyTypeFilter !== "all" ||
+    dateFrom ||
+    dateTo;
 
   const filtered = useMemo(() => {
     let items = [...applications];
     const q = search.toLowerCase();
-    if (q) items = items.filter((a) =>
-      a.companyName.toLowerCase().includes(q) || a.jobTitle.toLowerCase().includes(q) ||
-      a.hrCompanyName?.toLowerCase().includes(q) || a.channelOther?.toLowerCase().includes(q),
-    );
-    if (statusFilter !== 'all') items = items.filter((a) => a.status === statusFilter);
-    if (channelFilter !== 'all') items = items.filter((a) => a.channel === channelFilter);
-    if (applyTypeFilter !== 'all') items = items.filter((a) => a.applyType === applyTypeFilter);
-    if (dateFrom) items = items.filter((a) => a.appliedAt >= new Date(dateFrom));
-    if (dateTo) { const to = new Date(dateTo); to.setHours(23,59,59); items = items.filter((a) => a.appliedAt <= to); }
+    if (q)
+      items = items.filter(
+        (a) =>
+          a.companyName.toLowerCase().includes(q) ||
+          a.jobTitle.toLowerCase().includes(q) ||
+          a.hrCompanyName?.toLowerCase().includes(q) ||
+          a.channelOther?.toLowerCase().includes(q)
+      );
+    if (statusFilter !== "all")
+      items = items.filter((a) => a.status === statusFilter);
+    if (channelFilter !== "all")
+      items = items.filter((a) => a.channel === channelFilter);
+    if (applyTypeFilter !== "all")
+      items = items.filter((a) => a.applyType === applyTypeFilter);
+    if (dateFrom)
+      items = items.filter((a) => a.appliedAt >= new Date(dateFrom));
+    if (dateTo) {
+      const to = new Date(dateTo);
+      to.setHours(23, 59, 59);
+      items = items.filter((a) => a.appliedAt <= to);
+    }
     items.sort((a, b) => {
       let cmp = 0;
-      if (sortField === 'appliedAt') cmp = a.appliedAt.getTime() - b.appliedAt.getTime();
-      else if (sortField === 'companyName') cmp = a.companyName.localeCompare(b.companyName);
-      else if (sortField === 'jobTitle') cmp = a.jobTitle.localeCompare(b.jobTitle);
+      if (sortField === "appliedAt")
+        cmp = a.appliedAt.getTime() - b.appliedAt.getTime();
+      else if (sortField === "companyName")
+        cmp = a.companyName.localeCompare(b.companyName);
+      else if (sortField === "jobTitle")
+        cmp = a.jobTitle.localeCompare(b.jobTitle);
       else cmp = a.status.localeCompare(b.status);
-      return sortDir === 'asc' ? cmp : -cmp;
+      return sortDir === "asc" ? cmp : -cmp;
     });
     return items;
-  }, [applications, search, statusFilter, channelFilter, applyTypeFilter, dateFrom, dateTo, sortField, sortDir]);
+  }, [
+    applications,
+    search,
+    statusFilter,
+    channelFilter,
+    applyTypeFilter,
+    dateFrom,
+    dateTo,
+    sortField,
+    sortDir
+  ]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function SortIcon({ field }: { field: SortField }) {
-    if (sortField !== field) return <ArrowUpDown className="h-3 w-3 text-slate-400 dark:text-slate-600 ml-1" />;
-    return sortDir === 'asc'
-      ? <ArrowUp className="h-3 w-3 text-blue-500 ml-1" />
-      : <ArrowDown className="h-3 w-3 text-blue-500 ml-1" />;
+    if (sortField !== field)
+      return (
+        <ArrowUpDown className="h-3 w-3 text-gray-600 dark:text-slate-600 ml-1" />
+      );
+    return sortDir === "asc" ? (
+      <ArrowUp className="h-3 w-3 text-blue-500 ml-1" />
+    ) : (
+      <ArrowDown className="h-3 w-3 text-blue-500 ml-1" />
+    );
   }
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 py-3 border border-gray-200 bg-white/90 shadow rounded-lg">
       {/* Toolbar */}
       <div className="px-6 py-4 border-b space-y-3 border-slate-200 dark:border-[#1e2d45]">
         <div className="flex items-center gap-3 flex-wrap">
           <div className="relative flex-1 min-w-[180px] max-w-xs">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
-            <Input placeholder="Search company, role…" value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} className="pl-9" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
+            <Input
+              placeholder="Search company, role…"
+              value={search}
+              onChange={(e) => {
+                setSearch(e.target.value);
+                setPage(1);
+              }}
+              className="pl-9"
+            />
           </div>
-          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v as ApplicationStatus | 'all'); setPage(1); }}>
-            <SelectTrigger className="w-36 h-9"><SelectValue placeholder="All Statuses" /></SelectTrigger>
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v as ApplicationStatus | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-40 h-11">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Statuses</SelectItem>
               {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
-                <SelectItem key={s} value={s}>{STATUS_LABELS[s]}</SelectItem>
+                <SelectItem key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </SelectItem>
               ))}
             </SelectContent>
           </Select>
-          <Select value={channelFilter} onValueChange={(v) => { setChannelFilter(v as ApplicationChannel | 'all'); setPage(1); }}>
-            <SelectTrigger className="w-32 h-9"><SelectValue placeholder="Channel" /></SelectTrigger>
+          <Select
+            value={channelFilter}
+            onValueChange={(v) => {
+              setChannelFilter(v as ApplicationChannel | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-40 h-11">
+              <SelectValue placeholder="Channel" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Channels</SelectItem>
               <SelectItem value="indeed">Indeed</SelectItem>
@@ -113,8 +215,16 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
               <SelectItem value="other">Other</SelectItem>
             </SelectContent>
           </Select>
-          <Select value={applyTypeFilter} onValueChange={(v) => { setApplyTypeFilter(v as ApplyType | 'all'); setPage(1); }}>
-            <SelectTrigger className="w-36 h-9"><SelectValue placeholder="Apply Type" /></SelectTrigger>
+          <Select
+            value={applyTypeFilter}
+            onValueChange={(v) => {
+              setApplyTypeFilter(v as ApplyType | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-40 h-11">
+              <SelectValue placeholder="Apply Type" />
+            </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All Types</SelectItem>
               <SelectItem value="direct">Direct Apply</SelectItem>
@@ -135,13 +245,29 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <SlidersHorizontal className="h-4 w-4 text-slate-400 shrink-0" />
-          <span className="text-xs text-slate-400">Date range:</span>
-          <Input type="date" value={dateFrom} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} className="w-36 h-8 text-xs [color-scheme:light] dark:[color-scheme:dark]" />
-          <span className="text-xs text-slate-400">to</span>
-          <Input type="date" value={dateTo} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} className="w-36 h-8 text-xs [color-scheme:light] dark:[color-scheme:dark]" />
-          <span className="ml-auto text-xs text-slate-400">
-            {filtered.length} application{filtered.length !== 1 ? 's' : ''}
+          <SlidersHorizontal className="h-4 w-4 text-gray-600 shrink-0" />
+          <span className="text-xs text-gray-600">Date range:</span>
+          <Input
+            type="date"
+            value={dateFrom}
+            onChange={(e) => {
+              setDateFrom(e.target.value);
+              setPage(1);
+            }}
+            className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
+          />
+          <span className="text-xs text-gray-600">to</span>
+          <Input
+            type="date"
+            value={dateTo}
+            onChange={(e) => {
+              setDateTo(e.target.value);
+              setPage(1);
+            }}
+            className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
+          />
+          <span className="ml-auto text-xs text-gray-600">
+            {filtered.length} application{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
       </div>
@@ -151,21 +277,40 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
         {loading ? (
           <div className="p-6 space-y-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-14 rounded-lg animate-pulse bg-slate-100 dark:bg-[#111827]" style={{ opacity: 1 - i * 0.12 }} />
+              <div
+                key={i}
+                className="h-14 rounded-lg animate-pulse bg-slate-100 dark:bg-[#111827]"
+                style={{ opacity: 1 - i * 0.12 }}
+              />
             ))}
           </div>
         ) : filtered.length === 0 ? (
-          <EmptyState hasFilters={!!hasFilters} onAdd={() => setAddOpen(true)} onClear={clearFilters} />
+          <EmptyState
+            hasFilters={!!hasFilters}
+            onAdd={() => setAddOpen(true)}
+            onClear={clearFilters}
+          />
         ) : (
           <table className="w-full">
             <thead className="sticky top-0 z-10">
               <tr className="border-b border-slate-200 bg-slate-50 dark:border-[#1e2d45] dark:bg-[#0b0e1a]">
-                <Th onClick={() => toggleSort('status')} className="w-[140px]">Status <SortIcon field="status" /></Th>
-                <Th onClick={() => toggleSort('companyName')}>Company <SortIcon field="companyName" /></Th>
-                <Th onClick={() => toggleSort('jobTitle')}>Job Title <SortIcon field="jobTitle" /></Th>
+                <Th onClick={() => toggleSort("status")} className="w-[140px]">
+                  Status <SortIcon field="status" />
+                </Th>
+                <Th onClick={() => toggleSort("companyName")}>
+                  Company <SortIcon field="companyName" />
+                </Th>
+                <Th onClick={() => toggleSort("jobTitle")}>
+                  Job Title <SortIcon field="jobTitle" />
+                </Th>
                 <Th className="hidden md:table-cell">Channel</Th>
                 <Th className="hidden lg:table-cell">Apply Type</Th>
-                <Th onClick={() => toggleSort('appliedAt')} className="hidden md:table-cell">Applied <SortIcon field="appliedAt" /></Th>
+                <Th
+                  onClick={() => toggleSort("appliedAt")}
+                  className="hidden md:table-cell"
+                >
+                  Applied <SortIcon field="appliedAt" />
+                </Th>
               </tr>
             </thead>
             <tbody>
@@ -173,32 +318,44 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                 <tr
                   key={app.id}
                   onClick={() => openApp(app)}
-                  className={`border-b cursor-pointer group transition-colors duration-100 hover:bg-blue-50/60 dark:hover:bg-[#111827] border-slate-100 dark:border-[#1a2035]/60 ${idx % 2 === 0 ? '' : 'bg-slate-50/50 dark:bg-[#0d1020]/30'}`}
+                  className={`border-b cursor-pointer group transition-colors duration-100 hover:bg-blue-50/60 dark:hover:bg-[#111827] border-slate-100 dark:border-[#1a2035]/60 ${idx % 2 === 0 ? "" : "bg-slate-50/50 dark:bg-[#0d1020]/30"}`}
                 >
-                  <Td><StatusBadge status={app.status} size="sm" /></Td>
+                  <Td>
+                    <StatusBadge status={app.status} size="sm" />
+                  </Td>
                   <Td>
                     <div className="flex items-center gap-2.5">
-                      <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
-                        <Building2 className="h-3.5 w-3.5 text-slate-400 dark:text-slate-400" />
+                      <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
+                        <Building2 className="h-3.5 w-3.5 text-gray-600 dark:text-gray-600" />
                       </div>
                       <span className="font-medium text-slate-800 group-hover:text-slate-900 transition-colors truncate max-w-[180px] dark:text-slate-200 dark:group-hover:text-white">
                         {app.companyName}
                       </span>
                     </div>
                   </Td>
-                  <Td><span className="text-slate-600 truncate max-w-[200px] block dark:text-slate-300">{app.jobTitle}</span></Td>
+                  <Td>
+                    <span className="text-slate-600 truncate max-w-[200px] block dark:text-slate-300">
+                      {app.jobTitle}
+                    </span>
+                  </Td>
                   <Td className="hidden md:table-cell">
-                    <span className="text-xs rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-slate-400 dark:border-[#2a3357]">
-                      {app.channel === 'other' && app.channelOther ? app.channelOther : CHANNEL_LABELS[app.channel]}
+                    <span className="text-xs rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-600 dark:border-[#2a3357]">
+                      {app.channel === "other" && app.channelOther
+                        ? app.channelOther
+                        : CHANNEL_LABELS[app.channel]}
                     </span>
                   </Td>
                   <Td className="hidden lg:table-cell">
                     <span className="text-xs text-slate-500 dark:text-slate-500">
-                      {app.applyType === 'other' && app.applyTypeOther ? app.applyTypeOther : APPLY_TYPE_LABELS[app.applyType]}
+                      {app.applyType === "other" && app.applyTypeOther
+                        ? app.applyTypeOther
+                        : APPLY_TYPE_LABELS[app.applyType]}
                     </span>
                   </Td>
                   <Td className="hidden md:table-cell">
-                    <span className="text-xs text-slate-400 dark:text-slate-500">{formatDate(app.appliedAt)}</span>
+                    <span className="text-xs text-gray-600 dark:text-slate-500">
+                      {formatDate(app.appliedAt)}
+                    </span>
                   </Td>
                 </tr>
               ))}
@@ -210,53 +367,118 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
       {/* Pagination */}
       {filtered.length > PAGE_SIZE && (
         <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 dark:border-[#1e2d45]">
-          <span className="text-xs text-slate-400">Page {page} of {totalPages}</span>
+          <span className="text-xs text-gray-600">
+            Page {page} of {totalPages}
+          </span>
           <div className="flex items-center gap-1">
-            <Button size="icon-sm" variant="ghost" onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1}>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page === 1}
+            >
               <ChevronLeft className="h-4 w-4" />
             </Button>
-            <Button size="icon-sm" variant="ghost" onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages}>
+            <Button
+              size="icon-sm"
+              variant="ghost"
+              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+              disabled={page === totalPages}
+            >
               <ChevronRight className="h-4 w-4" />
             </Button>
           </div>
         </div>
       )}
 
-      <ApplicationSheet application={selectedApp} open={sheetOpen} onClose={() => setSheetOpen(false)} onDeleted={() => setSelectedApp(null)} />
-      <AddApplicationModal open={addOpen} onClose={() => setAddOpen(false)} userId={userId} />
+      <ApplicationSheet
+        application={selectedApp}
+        open={sheetOpen}
+        onClose={() => setSheetOpen(false)}
+        onDeleted={() => setSelectedApp(null)}
+      />
+      <AddApplicationModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        userId={userId}
+      />
     </div>
   );
 }
 
-function Th({ children, className, onClick }: { children?: React.ReactNode; className?: string; onClick?: () => void }) {
+function Th({
+  children,
+  className,
+  onClick
+}: {
+  children?: React.ReactNode;
+  className?: string;
+  onClick?: () => void;
+}) {
   return (
-    <th onClick={onClick} className={`text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-slate-400 dark:text-slate-500 ${onClick ? 'cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 select-none' : ''} ${className ?? ''}`}>
+    <th
+      onClick={onClick}
+      className={`text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-500 ${onClick ? "cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 select-none" : ""} ${className ?? ""}`}
+    >
       <span className="flex items-center">{children}</span>
     </th>
   );
 }
 
-function Td({ children, className }: { children?: React.ReactNode; className?: string }) {
-  return <td className={`px-4 py-3.5 text-sm ${className ?? ''}`}>{children}</td>;
+function Td({
+  children,
+  className
+}: {
+  children?: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <td className={`px-4 py-3.5 text-base ${className ?? ""}`}>{children}</td>
+  );
 }
 
-function EmptyState({ hasFilters, onAdd, onClear }: { hasFilters: boolean; onAdd: () => void; onClear: () => void }) {
+function EmptyState({
+  hasFilters,
+  onAdd,
+  onClear
+}: {
+  hasFilters: boolean;
+  onAdd: () => void;
+  onClear: () => void;
+}) {
   return (
     <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
       <div className="h-14 w-14 rounded-2xl flex items-center justify-center mb-4 bg-slate-100 border border-slate-200 dark:bg-[#111827] dark:border-[#1e2d45]">
-        <Briefcase className="h-7 w-7 text-slate-400 dark:text-slate-600" />
+        <Briefcase className="h-9 w-9 text-gray-600 dark:text-slate-600" />
       </div>
       {hasFilters ? (
         <>
-          <p className="text-slate-700 font-medium dark:text-slate-300">No applications match your filters</p>
-          <p className="text-slate-400 text-sm mt-1">Try adjusting or clearing your filters.</p>
-          <Button variant="secondary" size="sm" onClick={onClear} className="mt-4"><X className="h-3.5 w-3.5" /> Clear Filters</Button>
+          <p className="text-slate-700 font-medium dark:text-slate-300">
+            No applications match your filters
+          </p>
+          <p className="text-gray-600 text-base mt-1">
+            Try adjusting or clearing your filters.
+          </p>
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onClear}
+            className="mt-4"
+          >
+            <X className="h-3.5 w-3.5" /> Clear Filters
+          </Button>
         </>
       ) : (
         <>
-          <p className="text-slate-700 font-medium dark:text-slate-300">No applications yet</p>
-          <p className="text-slate-400 text-sm mt-1">Start tracking your job search by adding your first application.</p>
-          <Button variant="primary" onClick={onAdd} className="mt-4"><Plus className="h-4 w-4" /> Add First Application</Button>
+          <p className="text-slate-700 font-medium dark:text-slate-300">
+            No applications yet
+          </p>
+          <p className="text-gray-600 text-base mt-1">
+            Start tracking your job search by adding your first application.
+          </p>
+          <Button variant="primary" onClick={onAdd} className="mt-4">
+            <Plus className="h-4 w-4" /> Add First Application
+          </Button>
         </>
       )}
     </div>

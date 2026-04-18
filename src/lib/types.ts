@@ -1,15 +1,15 @@
 export type ApplicationStatus =
-  | 'pending'
-  | 'accepted'
-  | 'rejected'
-  | 'need_immediate_attention'
-  | 'expired';
+  | "pending"
+  | "accepted"
+  | "rejected"
+  | "need_immediate_attention"
+  | "expired";
 
-export type ApplicationChannel = 'indeed' | 'linkedin' | 'other';
+export type ApplicationChannel = "indeed" | "linkedin" | "other";
 
-export type ApplyType = 'direct' | 'external' | 'email' | 'other';
+export type ApplyType = "direct" | "external" | "email" | "other";
 
-export type PostedBy = 'hr' | 'company';
+export type PostedBy = "hr" | "company";
 
 export interface Application {
   id: string;
@@ -17,16 +17,16 @@ export interface Application {
   companyName: string;
   jobTitle: string;
   channel: ApplicationChannel;
-  channelOther?: string;
+  channelOther: string | null;
   applyType: ApplyType;
-  applyTypeOther?: string;
+  applyTypeOther: string | null;
   appliedAt: Date;
-  contactLink?: string;
+  contactLink: string | null;
   postedBy: PostedBy;
-  hrCompanyName?: string;
-  hrCompanyLink?: string;
-  socialPostLink?: string;
-  extraNotes?: string;
+  hrCompanyName: string | null;
+  hrCompanyLink: string | null;
+  socialPostLink: string | null;
+  extraNotes: string | null;
   status: ApplicationStatus;
   createdAt: Date;
   updatedAt: Date;
@@ -51,51 +51,79 @@ export interface AppUser {
 }
 
 export const STATUS_LABELS: Record<ApplicationStatus, string> = {
-  pending: 'Pending',
-  accepted: 'Accepted',
-  rejected: 'Rejected',
-  need_immediate_attention: 'Needs Attention',
-  expired: 'Expired',
+  pending: "Pending",
+  accepted: "Accepted",
+  rejected: "Rejected",
+  need_immediate_attention: "Needs Attention",
+  expired: "Expired"
 };
 
-export const STATUS_COLORS: Record<ApplicationStatus, { bg: string; text: string; border: string; dot: string }> = {
-  pending: { bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/30', dot: 'bg-amber-400' },
-  accepted: { bg: 'bg-emerald-500/10', text: 'text-emerald-400', border: 'border-emerald-500/30', dot: 'bg-emerald-400' },
-  rejected: { bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/30', dot: 'bg-red-400' },
-  need_immediate_attention: { bg: 'bg-orange-500/10', text: 'text-orange-400', border: 'border-orange-500/30', dot: 'bg-orange-400' },
-  expired: { bg: 'bg-slate-500/10', text: 'text-slate-400', border: 'border-slate-500/30', dot: 'bg-slate-400' },
+export const STATUS_COLORS: Record<
+  ApplicationStatus,
+  { bg: string; text: string; border: string; dot: string }
+> = {
+  pending: {
+    bg: "bg-amber-500/10",
+    text: "text-amber-400",
+    border: "border-amber-500/30",
+    dot: "bg-amber-400"
+  },
+  accepted: {
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-400",
+    border: "border-emerald-500/30",
+    dot: "bg-emerald-400"
+  },
+  rejected: {
+    bg: "bg-red-500/10",
+    text: "text-red-400",
+    border: "border-red-500/30",
+    dot: "bg-red-400"
+  },
+  need_immediate_attention: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-400",
+    border: "border-orange-500/30",
+    dot: "bg-orange-400"
+  },
+  expired: {
+    bg: "bg-slate-500/10",
+    text: "text-gray-600",
+    border: "border-slate-500/30",
+    dot: "bg-slate-400"
+  }
 };
 
 export const CHANNEL_LABELS: Record<ApplicationChannel | string, string> = {
-  indeed: 'Indeed',
-  linkedin: 'LinkedIn',
-  other: 'Other',
+  indeed: "Indeed",
+  linkedin: "LinkedIn",
+  other: "Other"
 };
 
 export const APPLY_TYPE_LABELS: Record<ApplyType | string, string> = {
-  direct: 'Direct Apply',
-  external: 'External Website',
-  email: 'Email',
-  other: 'Other',
+  direct: "Direct Apply",
+  external: "External Website",
+  email: "Email",
+  other: "Other"
 };
 
 export const TIMELINE_TITLE_OPTIONS = [
-  'Email Received',
-  'Call Received',
-  'Interview Scheduled',
-  'Interview Completed',
-  'Assessment Sent',
-  'Assessment Completed',
-  'Offer Received',
-  'Offer Accepted',
-  'Offer Declined',
-  'Rejection Received',
-  'Follow-up Sent',
-  'HR Contacted',
-  'Application Viewed',
-  'Second Round Interview',
-  'Final Round Interview',
-  'Background Check',
-  'Reference Check',
-  'Onboarding Started',
+  "Email Received",
+  "Call Received",
+  "Interview Scheduled",
+  "Interview Completed",
+  "Assessment Sent",
+  "Assessment Completed",
+  "Offer Received",
+  "Offer Accepted",
+  "Offer Declined",
+  "Rejection Received",
+  "Follow-up Sent",
+  "HR Contacted",
+  "Application Viewed",
+  "Second Round Interview",
+  "Final Round Interview",
+  "Background Check",
+  "Reference Check",
+  "Onboarding Started"
 ];
