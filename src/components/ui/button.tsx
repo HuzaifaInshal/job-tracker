@@ -19,11 +19,11 @@ const buttonVariants = cva(
         danger:
           "bg-red-50 text-red-600 border border-red-200 hover:bg-red-100 hover:border-red-300 dark:bg-red-600/10 dark:text-red-400 dark:border-red-500/20 dark:hover:bg-red-600/20",
         outline:
-          "border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-[#2a3357] dark:text-slate-300 dark:hover:bg-[#1e2540]",
+          "border border-slate-200 text-slate-600 hover:bg-slate-50 dark:border-[#2a3357] dark:text-gray-600 dark:hover:bg-[#1e2540]",
         link: "text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300 underline-offset-4 hover:underline p-0 h-auto"
       },
       size: {
-        sm: "h-9 px-3 text-xs",
+        sm: "h-9 px-3 text-sm",
         md: "h-11 px-4",
         lg: "h-10 px-5 text-[15px]",
         icon: "h-11 w-9 p-0",

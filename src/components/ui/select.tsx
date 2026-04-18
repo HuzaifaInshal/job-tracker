@@ -82,7 +82,7 @@ function SelectLabel({
   return (
     <SelectPrimitive.Label
       className={cn(
-        "px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-gray-600 dark:text-slate-500",
+        "px-2 py-1.5 text-sm font-semibold uppercase tracking-wider text-gray-600 dark:text-slate-500",
         className
       )}
       {...props}
@@ -100,7 +100,7 @@ function SelectItem({
       className={cn(
         "relative flex w-full cursor-pointer select-none items-center rounded-lg py-2 pl-8 pr-3 text-base outline-none transition-colors duration-100",
         "text-slate-700 hover:bg-slate-100 hover:text-slate-900 focus:bg-slate-100 focus:text-slate-900",
-        "dark:text-slate-300 dark:hover:bg-[#1e2540] dark:hover:text-slate-100 dark:focus:bg-[#1e2540]",
+        "dark:text-gray-600 dark:hover:bg-[#1e2540] dark:hover:text-slate-100 dark:focus:bg-[#1e2540]",
         "data-[disabled]:pointer-events-none data-[disabled]:opacity-40",
         className
       )}

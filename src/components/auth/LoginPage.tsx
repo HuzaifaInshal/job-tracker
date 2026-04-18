@@ -103,7 +103,7 @@ export function LoginPage() {
                   <div className="h-9 w-9 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shrink-0">
                     {p.icon}
                   </div>
-                  <span className="text-base text-slate-300">{p.text}</span>
+                  <span className="text-base text-gray-600">{p.text}</span>
                 </div>
               ))}
             </div>
@@ -164,7 +164,7 @@ export function LoginPage() {
                 </div>
               ))}
             </div>
-            <p className="text-xs text-slate-600 text-center mt-3">
+            <p className="text-sm text-slate-600 text-center mt-3">
               Your dashboard awaits
             </p>
           </div>
@@ -210,7 +210,7 @@ export function LoginPage() {
 
           {/* Card */}
           <div className="gradient-border rounded-2xl p-6 shadow-2xl shadow-black/60">
-            <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold mb-5 text-center">
+            <p className="text-sm text-slate-500 uppercase tracking-widest font-semibold mb-5 text-center">
               Continue with
             </p>
 
@@ -236,14 +236,14 @@ export function LoginPage() {
             </button>
 
             {error && (
-              <p className="mt-4 text-center text-xs text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
+              <p className="mt-4 text-center text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg px-3 py-2">
                 {error}
               </p>
             )}
 
             <div className="mt-6 flex items-center gap-3">
               <div className="flex-1 h-px bg-[#1e2d45]" />
-              <span className="text-xs text-slate-600">
+              <span className="text-sm text-slate-600">
                 Secured by Firebase Auth
               </span>
               <div className="flex-1 h-px bg-[#1e2d45]" />
@@ -259,12 +259,12 @@ export function LoginPage() {
             ].map((note) => (
               <div key={note} className="flex items-center gap-2">
                 <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500 shrink-0" />
-                <span className="text-xs text-slate-500">{note}</span>
+                <span className="text-sm text-slate-500">{note}</span>
               </div>
             ))}
           </div>
 
-          <p className="text-center text-xs text-slate-700 mt-8">
+          <p className="text-center text-sm text-slate-700 mt-8">
             By signing in, you agree to our terms of service.
           </p>
         </div>

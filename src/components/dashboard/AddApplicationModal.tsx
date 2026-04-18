@@ -89,8 +89,7 @@ export function AddApplicationModal({
       !form.companyName ||
       !form.jobTitle ||
       !form.channel ||
-      !form.applyType ||
-      !form.postedBy
+      !form.applyType
     ) {
       toast("Please fill in all required fields.", "error");
       return;
@@ -134,7 +133,7 @@ export function AddApplicationModal({
 
   return (
     <Dialog open={open} onOpenChange={(o) => !o && handleClose()}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-2xl md:max-w-4xl">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
             <DialogTitle>Add Application</DialogTitle>
@@ -250,7 +249,7 @@ export function AddApplicationModal({
             {/* Row 4: Posted By */}
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <Label>Posted By *</Label>
+                <Label>Posted By</Label>
                 <Select
                   value={form.postedBy}
                   onValueChange={(v) => set("postedBy", v)}

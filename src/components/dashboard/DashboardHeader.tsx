@@ -61,7 +61,7 @@ export function DashboardHeader({ applications }: Props) {
             return (
               <div
                 key={s}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border shrink-0 ${colors.bg} ${colors.text} ${colors.border}`}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium border shrink-0 ${colors.bg} ${colors.text} ${colors.border}`}
               >
                 <span className={`h-1.5 w-1.5 rounded-full ${colors.dot}`} />
                 {count} {STATUS_LABELS[s]}
@@ -69,7 +69,7 @@ export function DashboardHeader({ applications }: Props) {
             );
           })}
           {applications.length > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium border shrink-0 ml-1 border-slate-200 bg-slate-50 text-slate-500 dark:border-[#2a3357] dark:bg-[#111827] dark:text-gray-600">
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium border shrink-0 ml-1 border-slate-200 bg-slate-50 text-slate-500 dark:border-[#2a3357] dark:bg-[#111827] dark:text-gray-600">
               {applications.length} Total
             </div>
           )}
@@ -88,11 +88,11 @@ export function DashboardHeader({ applications }: Props) {
                   alt={user?.displayName ?? ""}
                   className="h-full w-full object-cover"
                 />
-                <Avatar.Fallback className="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-xs font-semibold dark:bg-blue-900/30 dark:text-blue-400">
+                <Avatar.Fallback className="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-sm font-semibold dark:bg-blue-900/30 dark:text-blue-400">
                   {initials}
                 </Avatar.Fallback>
               </Avatar.Root>
-              <span className="text-base text-slate-600 max-w-[140px] truncate hidden sm:block dark:text-slate-300">
+              <span className="text-base text-slate-600 max-w-[140px] truncate hidden sm:block dark:text-gray-600">
                 {user?.displayName ?? user?.email}
               </span>
               <ChevronDown className="h-3.5 w-3.5 text-gray-600" />
@@ -106,16 +106,16 @@ export function DashboardHeader({ applications }: Props) {
               className="z-50 min-w-[180px] rounded-xl border p-1 shadow-xl border-slate-200 bg-white shadow-slate-200/50 dark:border-[#2a3357] dark:bg-[#111827] dark:shadow-black/40 data-[state=open]:animate-in data-[state=open]:fade-in-0 data-[state=open]:zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0"
             >
               <div className="px-2 py-1.5 mb-1 border-b border-slate-100 dark:border-[#1e2d45]">
-                <p className="text-xs font-medium text-slate-700 truncate dark:text-slate-300">
+                <p className="text-sm font-medium text-slate-700 truncate dark:text-gray-600">
                   {user?.displayName}
                 </p>
-                <p className="text-xs text-gray-600 truncate dark:text-slate-500">
+                <p className="text-sm text-gray-600 truncate dark:text-slate-500">
                   {user?.email}
                 </p>
               </div>
               <DropdownMenu.Item
                 onClick={logout}
-                className="flex items-center gap-2 px-2 py-2 text-base rounded-lg cursor-pointer transition-colors focus:outline-none text-slate-600 hover:bg-slate-50 hover:text-red-600 dark:text-slate-300 dark:hover:bg-[#1e2540] dark:hover:text-red-400"
+                className="flex items-center gap-2 px-2 py-2 text-base rounded-lg cursor-pointer transition-colors focus:outline-none text-slate-600 hover:bg-slate-50 hover:text-red-600 dark:text-gray-600 dark:hover:bg-[#1e2540] dark:hover:text-red-400"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out

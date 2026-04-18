@@ -125,7 +125,7 @@ export function ApplicationSheet({
                 }
                 disabled={updatingStatus}
               >
-                <SelectTrigger className="h-9 text-xs w-38 border-slate-200 dark:border-[#2a3357]">
+                <SelectTrigger className="h-9 text-sm w-38 border-slate-200 dark:border-[#2a3357]">
                   <RefreshCw className="h-3 w-3 text-gray-600 mr-1" />
                   <SelectValue />
                 </SelectTrigger>
@@ -238,10 +238,10 @@ export function ApplicationSheet({
             )}
             {application.extraNotes && (
               <div>
-                <p className="text-xs font-medium mb-1.5 flex items-center gap-1.5 text-gray-600 dark:text-slate-500">
+                <p className="text-sm font-medium mb-1.5 flex items-center gap-1.5 text-gray-600 dark:text-slate-500">
                   <MessageSquare className="h-3.5 w-3.5" /> Notes
                 </p>
-                <p className="text-base leading-relaxed whitespace-pre-wrap rounded-lg p-3 border text-slate-700 bg-slate-50 border-slate-200 dark:text-slate-300 dark:bg-[#0d1120] dark:border-[#1e2d45]">
+                <p className="text-base leading-relaxed whitespace-pre-wrap rounded-lg p-3 border text-slate-700 bg-slate-50 border-slate-200 dark:text-gray-600 dark:bg-[#0d1120] dark:border-[#1e2d45]">
                   {application.extraNotes}
                 </p>
               </div>
@@ -254,7 +254,7 @@ export function ApplicationSheet({
               <h3 className="text-base font-semibold flex items-center gap-2 text-slate-800 dark:text-slate-200">
                 <Clock className="h-4 w-4 text-gray-600" /> Timeline
                 {timelines.length > 0 && (
-                  <span className="text-xs font-normal text-gray-600">
+                  <span className="text-sm font-normal text-gray-600">
                     ({timelines.length})
                   </span>
                 )}
@@ -279,11 +279,11 @@ export function ApplicationSheet({
               </div>
             ) : timelines.length === 0 ? (
               <div className="text-center py-8">
-                <Clock className="h-8 w-8 mx-auto mb-2 text-slate-300 dark:text-slate-700" />
+                <Clock className="h-8 w-8 mx-auto mb-2 text-gray-600 dark:text-slate-700" />
                 <p className="text-base text-gray-600">
                   No timeline entries yet.
                 </p>
-                <p className="text-xs mt-1 text-slate-300 dark:text-slate-600">
+                <p className="text-sm mt-1 text-gray-600 dark:text-slate-600">
                   Add events as your application progresses.
                 </p>
               </div>
@@ -321,7 +321,7 @@ export function ApplicationSheet({
                                 </span>
                               )}
                               {tl.description && (
-                                <p className="text-xs mt-1.5 leading-relaxed text-slate-500 dark:text-gray-600">
+                                <p className="text-sm mt-1.5 leading-relaxed text-slate-500 dark:text-gray-600">
                                   {tl.description}
                                 </p>
                               )}
@@ -347,18 +347,13 @@ export function ApplicationSheet({
             {confirmDelete ? (
               <div className="flex items-center gap-2">
                 <AlertCircle className="h-4 w-4 text-red-500 shrink-0" />
-                <span className="text-xs text-red-500 flex-1">
+                <span className="text-sm text-red-500 flex-1">
                   Delete this application and all its timeline entries?
                 </span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setConfirmDelete(false)}
-                >
+                <Button variant="ghost" onClick={() => setConfirmDelete(false)}>
                   Cancel
                 </Button>
                 <Button
-                  size="sm"
                   variant="danger"
                   onClick={handleDelete}
                   disabled={deletingApp}
@@ -368,7 +363,6 @@ export function ApplicationSheet({
               </div>
             ) : (
               <Button
-                size="sm"
                 variant="danger"
                 onClick={() => setConfirmDelete(true)}
                 className="w-full"
@@ -407,7 +401,7 @@ function DetailRow({
         <p className="text-[11px] font-medium uppercase tracking-wider mb-0.5 text-gray-600 dark:text-slate-500">
           {label}
         </p>
-        <div className="text-base break-all text-slate-700 dark:text-slate-300">
+        <div className="text-base break-all text-slate-700 dark:text-gray-600">
           {children}
         </div>
       </div>

@@ -54,7 +54,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
             <ToastPrimitive.Title className="flex-1 text-base">
               {t.message}
             </ToastPrimitive.Title>
-            <ToastPrimitive.Close className="transition-colors text-gray-600 hover:text-slate-600 dark:text-slate-500 dark:hover:text-slate-300">
+            <ToastPrimitive.Close className="transition-colors text-gray-600 hover:text-slate-600 dark:text-slate-500 dark:hover:text-gray-600">
               <X className="h-4 w-4" />
             </ToastPrimitive.Close>
           </ToastPrimitive.Root>

@@ -52,7 +52,7 @@ function DialogContent({
       >
         {children}
         {showClose && (
-          <DialogClose className="absolute right-4 top-4 rounded-lg p-1.5 transition-colors text-gray-600 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-[#1e2540]">
+          <DialogClose className="absolute right-4 top-4 rounded-lg p-1.5 transition-colors text-gray-600 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-gray-600 dark:hover:bg-[#1e2540]">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </DialogClose>
@@ -98,7 +98,7 @@ function DialogTitle({
   return (
     <DialogPrimitive.Title
       className={cn(
-        "text-base font-semibold text-slate-900 dark:text-slate-100",
+        "text-xl font-semibold text-slate-900 dark:text-slate-100",
         className
       )}
       {...props}

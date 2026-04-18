@@ -39,7 +39,8 @@ import {
 
 type SortField = "appliedAt" | "companyName" | "status" | "jobTitle";
 type SortDir = "asc" | "desc";
-const PAGE_SIZE = 15;
+const PAGE_SIZE_OPTIONS = [10, 20, 50] as const;
+type PageSize = (typeof PAGE_SIZE_OPTIONS)[number];
 
 interface Props {
   applications: Application[];
@@ -66,6 +67,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
   const [sortField, setSortField] = useState<SortField>("appliedAt");
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState<PageSize>(10);
 
   function openApp(app: Application) {
     setSelectedApp(app);
@@ -147,8 +149,8 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
     sortDir
   ]);
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  const paginated = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
 
   function SortIcon({ field }: { field: SortField }) {
     if (sortField !== field)
@@ -163,7 +165,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 py-3 border border-gray-200 bg-white/90 shadow rounded-lg">
+    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 pt-3 border border-gray-200 bg-white/90 shadow rounded-lg">
       {/* Toolbar */}
       <div className="px-6 py-4 border-b space-y-3 border-slate-200 dark:border-[#1e2d45]">
         <div className="flex items-center gap-3 flex-wrap">
@@ -246,7 +248,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
         </div>
         <div className="flex items-center gap-3">
           <SlidersHorizontal className="h-4 w-4 text-gray-600 shrink-0" />
-          <span className="text-xs text-gray-600">Date range:</span>
+          <span className="text-sm text-gray-600">Date range:</span>
           <Input
             type="date"
             value={dateFrom}
@@ -256,7 +258,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
             }}
             className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
           />
-          <span className="text-xs text-gray-600">to</span>
+          <span className="text-sm text-gray-600">to</span>
           <Input
             type="date"
             value={dateTo}
@@ -266,7 +268,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
             }}
             className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
           />
-          <span className="ml-auto text-xs text-gray-600">
+          <span className="ml-auto text-sm text-gray-600">
             {filtered.length} application{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
@@ -314,14 +316,22 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
               </tr>
             </thead>
             <tbody>
-              {paginated.map((app, idx) => (
+              {paginated.map((app) => (
                 <tr
                   key={app.id}
                   onClick={() => openApp(app)}
-                  className={`border-b cursor-pointer group transition-colors duration-100 hover:bg-blue-50/60 dark:hover:bg-[#111827] border-slate-100 dark:border-[#1a2035]/60 ${idx % 2 === 0 ? "" : "bg-slate-50/50 dark:bg-[#0d1020]/30"}`}
+                  className={`border-b cursor-pointer group transition-colors duration-100 border-slate-100 dark:border-[#1a2035]/60 ${
+                    app.status === "need_immediate_attention"
+                      ? "bg-orange-50/70 hover:bg-orange-100/80 dark:bg-orange-950/20 dark:hover:bg-orange-950/40"
+                      : app.status === "rejected"
+                      ? "bg-red-50/70 hover:bg-red-100/80 dark:bg-red-950/20 dark:hover:bg-red-950/40"
+                      : app.status === "accepted"
+                      ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
+                      : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
+                  }`}
                 >
                   <Td>
-                    <StatusBadge status={app.status} size="sm" />
+                    <StatusBadge status={app.status} />
                   </Td>
                   <Td>
                     <div className="flex items-center gap-2.5">
@@ -334,26 +344,26 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                     </div>
                   </Td>
                   <Td>
-                    <span className="text-slate-600 truncate max-w-[200px] block dark:text-slate-300">
+                    <span className="text-slate-600 font-medium truncate max-w-[200px] block dark:text-gray-600">
                       {app.jobTitle}
                     </span>
                   </Td>
                   <Td className="hidden md:table-cell">
-                    <span className="text-xs rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-600 dark:border-[#2a3357]">
+                    <span className="text-sm font-medium rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-600 dark:border-[#2a3357]">
                       {app.channel === "other" && app.channelOther
                         ? app.channelOther
                         : CHANNEL_LABELS[app.channel]}
                     </span>
                   </Td>
                   <Td className="hidden lg:table-cell">
-                    <span className="text-xs text-slate-500 dark:text-slate-500">
+                    <span className="font-medium text-slate-500 dark:text-slate-500">
                       {app.applyType === "other" && app.applyTypeOther
                         ? app.applyTypeOther
                         : APPLY_TYPE_LABELS[app.applyType]}
                     </span>
                   </Td>
                   <Td className="hidden md:table-cell">
-                    <span className="text-xs text-gray-600 dark:text-slate-500">
+                    <span className="font-medium text-gray-600 dark:text-slate-500">
                       {formatDate(app.appliedAt)}
                     </span>
                   </Td>
@@ -365,28 +375,52 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
       </div>
 
       {/* Pagination */}
-      {filtered.length > PAGE_SIZE && (
+      {filtered.length > 0 && (
         <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 dark:border-[#1e2d45]">
-          <span className="text-xs text-gray-600">
-            Page {page} of {totalPages}
-          </span>
-          <div className="flex items-center gap-1">
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              disabled={page === 1}
+          <div className="flex items-center gap-2">
+            <span className="text-sm text-gray-600">Rows per page:</span>
+            <Select
+              value={String(pageSize)}
+              onValueChange={(v) => {
+                setPageSize(Number(v) as PageSize);
+                setPage(1);
+              }}
             >
-              <ChevronLeft className="h-4 w-4" />
-            </Button>
-            <Button
-              size="icon-sm"
-              variant="ghost"
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              disabled={page === totalPages}
-            >
-              <ChevronRight className="h-4 w-4" />
-            </Button>
+              <SelectTrigger className="w-20 h-8 text-sm">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {PAGE_SIZE_OPTIONS.map((n) => (
+                  <SelectItem key={n} value={String(n)}>
+                    {n}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex items-center gap-3">
+            <span className="text-sm text-gray-600">
+              {(page - 1) * pageSize + 1}–
+              {Math.min(page * pageSize, filtered.length)} of {filtered.length}
+            </span>
+            <div className="flex items-center gap-1">
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                disabled={page === 1}
+              >
+                <ChevronLeft className="h-4 w-4" />
+              </Button>
+              <Button
+                size="icon-sm"
+                variant="ghost"
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                disabled={page === totalPages}
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       )}
@@ -418,7 +452,7 @@ function Th({
   return (
     <th
       onClick={onClick}
-      className={`text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-500 ${onClick ? "cursor-pointer hover:text-slate-600 dark:hover:text-slate-300 select-none" : ""} ${className ?? ""}`}
+      className={`text-left px-4 py-3 text-[11px] font-semibold uppercase tracking-widest text-gray-600 dark:text-slate-500 ${onClick ? "cursor-pointer hover:text-slate-600 dark:hover:text-gray-600 select-none" : ""} ${className ?? ""}`}
     >
       <span className="flex items-center">{children}</span>
     </th>
@@ -453,7 +487,7 @@ function EmptyState({
       </div>
       {hasFilters ? (
         <>
-          <p className="text-slate-700 font-medium dark:text-slate-300">
+          <p className="text-slate-700 font-medium dark:text-gray-600">
             No applications match your filters
           </p>
           <p className="text-gray-600 text-base mt-1">
@@ -470,7 +504,7 @@ function EmptyState({
         </>
       ) : (
         <>
-          <p className="text-slate-700 font-medium dark:text-slate-300">
+          <p className="text-slate-700 font-medium dark:text-gray-600">
             No applications yet
           </p>
           <p className="text-gray-600 text-base mt-1">

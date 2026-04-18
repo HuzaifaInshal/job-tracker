@@ -8,7 +8,7 @@ function Label({
   return (
     <LabelPrimitive.Root
       className={cn(
-        "block text-xs font-medium mb-1.5",
+        "block text-sm font-medium mb-1.5",
         "text-slate-500 dark:text-gray-600",
         className
       )}

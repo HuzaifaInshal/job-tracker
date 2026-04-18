@@ -35,7 +35,7 @@ function SheetContent({
       <SheetOverlay />
       <DialogPrimitive.Content
         className={cn(
-          "fixed right-0 top-0 z-50 h-full w-[480px] max-w-[95vw] shadow-2xl",
+          "fixed right-0 top-0 z-50 h-full w-[480px] md:w-[680px] max-w-[95vw] shadow-2xl",
           "border-l flex flex-col overflow-hidden",
           "border-slate-200 bg-white shadow-slate-200/30",
           "dark:border-[#1e2d45] dark:bg-[#0b0e1a] dark:shadow-black/60",
@@ -55,7 +55,7 @@ function SheetContent({
               Panel
             </DialogPrimitive.Title>
           )}
-          <SheetClose className="rounded-lg p-1.5 transition-colors text-gray-600 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-slate-300 dark:hover:bg-[#1e2540]">
+          <SheetClose className="rounded-lg p-1.5 transition-colors text-gray-600 hover:text-slate-600 hover:bg-slate-100 dark:text-slate-500 dark:hover:text-gray-600 dark:hover:bg-[#1e2540]">
             <X className="h-4 w-4" />
             <span className="sr-only">Close</span>
           </SheetClose>
