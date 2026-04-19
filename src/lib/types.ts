@@ -3,7 +3,8 @@ export type ApplicationStatus =
   | "accepted"
   | "rejected"
   | "need_immediate_attention"
-  | "expired";
+  | "expired"
+  | "disputed";
 
 export type ApplicationChannel = "indeed" | "linkedin" | "other";
 
@@ -55,7 +56,8 @@ export const STATUS_LABELS: Record<ApplicationStatus, string> = {
   accepted: "Accepted",
   rejected: "Rejected",
   need_immediate_attention: "Needs Attention",
-  expired: "Expired"
+  expired: "Expired",
+  disputed: "Disputed",
 };
 
 export const STATUS_COLORS: Record<
@@ -91,7 +93,13 @@ export const STATUS_COLORS: Record<
     text: "text-gray-600",
     border: "border-slate-500/30",
     dot: "bg-slate-400"
-  }
+  },
+  disputed: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-400",
+    border: "border-purple-500/30",
+    dot: "bg-purple-400"
+  },
 };
 
 export const CHANNEL_LABELS: Record<ApplicationChannel | string, string> = {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useState, useEffect, type FormEvent } from "react";
 import { format } from "date-fns";
 import {
   Dialog,
@@ -21,7 +21,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
-import { createApplication } from "@/lib/firestore";
+import { createApplication, updateApplication } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
 import type {
   Application,
@@ -35,7 +35,7 @@ interface Props {
   open: boolean;
   onClose: () => void;
   userId: string;
-  editData?: Application;
+  editData?: Application | null;
 }
 
 const emptyForm = () => ({
@@ -63,7 +63,33 @@ export function AddApplicationModal({
 }: Props) {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
+  const isEdit = !!editData;
   const [form, setForm] = useState(emptyForm);
+
+  useEffect(() => {
+    if (open) {
+      setForm(
+        editData
+          ? {
+              companyName: editData.companyName,
+              jobTitle: editData.jobTitle,
+              channel: editData.channel,
+              channelOther: editData.channelOther ?? "",
+              applyType: editData.applyType,
+              applyTypeOther: editData.applyTypeOther ?? "",
+              appliedAt: format(editData.appliedAt, "yyyy-MM-dd'T'HH:mm"),
+              contactLink: editData.contactLink ?? "",
+              postedBy: editData.postedBy,
+              hrCompanyName: editData.hrCompanyName ?? "",
+              hrCompanyLink: editData.hrCompanyLink ?? "",
+              socialPostLink: editData.socialPostLink ?? "",
+              extraNotes: editData.extraNotes ?? "",
+              status: editData.status
+            }
+          : emptyForm()
+      );
+    }
+  }, [open, editData]);
 
   function set(field: string, value: string) {
     setForm((prev) => {
@@ -95,26 +121,31 @@ export function AddApplicationModal({
       return;
     }
     setSaving(true);
+    const payload = {
+      companyName: form.companyName.trim(),
+      jobTitle: form.jobTitle.trim(),
+      channel: form.channel as ApplicationChannel,
+      channelOther: form.channel === "other" ? form.channelOther.trim() : null,
+      applyType: form.applyType as ApplyType,
+      applyTypeOther:
+        form.applyType === "other" ? form.applyTypeOther.trim() : null,
+      appliedAt: new Date(form.appliedAt),
+      contactLink: form.contactLink.trim() || null,
+      postedBy: form.postedBy as PostedBy,
+      hrCompanyName: form.hrCompanyName.trim() || null,
+      hrCompanyLink: form.hrCompanyLink.trim() || null,
+      socialPostLink: form.socialPostLink.trim() || null,
+      extraNotes: form.extraNotes.trim() || null,
+      status: form.status
+    };
     try {
-      await createApplication(userId, {
-        companyName: form.companyName.trim(),
-        jobTitle: form.jobTitle.trim(),
-        channel: form.channel as ApplicationChannel,
-        channelOther:
-          form.channel === "other" ? form.channelOther.trim() : null,
-        applyType: form.applyType as ApplyType,
-        applyTypeOther:
-          form.applyType === "other" ? form.applyTypeOther.trim() : null,
-        appliedAt: new Date(form.appliedAt),
-        contactLink: form.contactLink.trim() || null,
-        postedBy: form.postedBy as PostedBy,
-        hrCompanyName: form.hrCompanyName.trim() || null,
-        hrCompanyLink: form.hrCompanyLink.trim() || null,
-        socialPostLink: form.socialPostLink.trim() || null,
-        extraNotes: form.extraNotes.trim() || null,
-        status: "pending"
-      });
-      toast("Application added successfully!");
+      if (isEdit && editData) {
+        await updateApplication(editData.id, payload);
+        toast("Application updated!");
+      } else {
+        await createApplication(userId, { ...payload, status: "pending" });
+        toast("Application added successfully!");
+      }
       handleClose();
     } catch (e) {
       console.log("e", e);
@@ -136,8 +167,14 @@ export function AddApplicationModal({
       <DialogContent className="max-w-2xl md:max-w-4xl">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add Application</DialogTitle>
-            <DialogDescription>Track a new job application</DialogDescription>
+            <DialogTitle>
+              {isEdit ? "Edit Application" : "Add Application"}
+            </DialogTitle>
+            <DialogDescription>
+              {isEdit
+                ? "Update application details"
+                : "Track a new job application"}
+            </DialogDescription>
           </DialogHeader>
 
           <div className="px-6 space-y-5">
@@ -315,7 +352,7 @@ export function AddApplicationModal({
             </Button>
             <Button type="submit" variant="primary" disabled={saving}>
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {saving ? "Saving…" : "Add Application"}
+              {saving ? "Saving…" : isEdit ? "Save Changes" : "Add Application"}
             </Button>
           </DialogFooter>
         </form>

@@ -20,6 +20,43 @@ const syne = Syne({
 export const metadata: Metadata = {
   title: 'JobTrack — Never Lose Track of an Application',
   description: 'The command center for your job search. Track applications, manage timelines, and land your dream job.',
+  icons: {
+    icon: '/favicon.svg',
+  },
+  openGraph: {
+    title: 'JobTrack — Never Lose Track of an Application',
+    description: 'The command center for your job search. Track applications, manage timelines, and land your dream job.',
+    url: 'https://job-tracker-e70ce.web.app',
+    siteName: 'JobTrack',
+    images: [
+      {
+        url: '/readme/1.png',
+        width: 1920,
+        height: 943,
+        alt: 'JobTrack Dashboard',
+      },
+      {
+        url: '/readme/2.png',
+        width: 1920,
+        height: 943,
+        alt: 'JobTrack Application Details',
+      },
+      {
+        url: '/readme/3.png',
+        width: 1920,
+        height: 943,
+        alt: 'JobTrack Timeline',
+      },
+    ],
+    locale: 'en_US',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'JobTrack — Never Lose Track of an Application',
+    description: 'The command center for your job search. Track applications, manage timelines, and land your dream job.',
+    images: ['/readme/1.png'],
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

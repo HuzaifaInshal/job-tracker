@@ -5,12 +5,23 @@ import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/badge";
 import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { AddApplicationModal } from "./AddApplicationModal";
 import { AddTimelineModal } from "./AddTimelineModal";
 import { useTimelines } from "@/hooks/useTimelines";
 import {
@@ -42,7 +53,8 @@ import {
   Clock,
   CheckCircle2,
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Pencil
 } from "lucide-react";
 
 interface Props {
@@ -66,15 +78,21 @@ export function ApplicationSheet({
   const [updatingStatus, setUpdatingStatus] = useState(false);
   const [deletingApp, setDeletingApp] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [editing, setEditing] = useState(false);
+  const [pendingStatus, setPendingStatus] = useState<ApplicationStatus | null>(null);
+  const [statusNote, setStatusNote] = useState("");
 
   if (!application) return null;
 
   async function handleStatusChange(status: ApplicationStatus) {
     if (!application) return;
     setUpdatingStatus(true);
+    setPendingStatus(null);
+    const note = statusNote.trim();
+    setStatusNote("");
     try {
       await updateApplicationStatus(application.id, status);
-      await createAutoTimeline(application.id, status);
+      await createAutoTimeline(application.id, status, note || undefined);
       toast("Status updated");
     } catch {
       toast("Failed to update status.", "error");
@@ -118,27 +136,34 @@ export function ApplicationSheet({
           <div className="px-5 py-4 border-b border-slate-100 dark:border-[#1e2d45]">
             <div className="flex items-center justify-between gap-3">
               <StatusBadge status={application.status} />
-              <Select
-                value={application.status}
-                onValueChange={(v) =>
-                  handleStatusChange(v as ApplicationStatus)
-                }
-                disabled={updatingStatus}
-              >
-                <SelectTrigger className="h-9 text-sm w-38 border-slate-200 dark:border-[#2a3357]">
-                  <RefreshCw className="h-3 w-3 text-gray-600 mr-1" />
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map(
-                    (s) => (
-                      <SelectItem key={s} value={s}>
-                        {STATUS_LABELS[s]}
-                      </SelectItem>
-                    )
-                  )}
-                </SelectContent>
-              </Select>
+              <div className="flex items-center gap-2">
+                <Button
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setEditing(true)}
+                >
+                  <Pencil className="h-3.5 w-3.5" /> Edit
+                </Button>
+                <Select
+                  value={application.status}
+                  onValueChange={(v) => setPendingStatus(v as ApplicationStatus)}
+                  disabled={updatingStatus}
+                >
+                  <SelectTrigger className="h-9 text-sm w-38 border-slate-200 dark:border-[#2a3357]">
+                    <RefreshCw className="h-3 w-3 text-gray-600 mr-1" />
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map(
+                      (s) => (
+                        <SelectItem key={s} value={s}>
+                          {STATUS_LABELS[s]}
+                        </SelectItem>
+                      )
+                    )}
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           </div>
 
@@ -168,7 +193,7 @@ export function ApplicationSheet({
             {application.contactLink && (
               <DetailRow
                 icon={<Link2 className="h-4 w-4" />}
-                label="Contact / Link"
+                label="Application Link / Email"
               >
                 <a
                   href={
@@ -373,6 +398,43 @@ export function ApplicationSheet({
           </div>
         </SheetContent>
       </Sheet>
+      <Dialog open={!!pendingStatus} onOpenChange={(o) => { if (!o) { setPendingStatus(null); setStatusNote(""); } }}>
+        <DialogContent showClose={false}>
+          <DialogHeader>
+            <DialogTitle>Change Status</DialogTitle>
+            <DialogDescription>
+              Change status from <strong>{STATUS_LABELS[application.status]}</strong> to <strong>{pendingStatus ? STATUS_LABELS[pendingStatus] : ""}</strong>?
+            </DialogDescription>
+          </DialogHeader>
+          <div className="px-6 pb-2">
+            <Label htmlFor="status-note">Note <span className="text-slate-400 dark:text-slate-600 font-normal">(optional)</span></Label>
+            <Textarea
+              id="status-note"
+              rows={3}
+              placeholder="Add a note about this status change..."
+              value={statusNote}
+              onChange={(e) => setStatusNote(e.target.value)}
+              className="mt-1.5"
+            />
+          </div>
+          <DialogFooter>
+            <Button variant="ghost" onClick={() => { setPendingStatus(null); setStatusNote(""); }}>Cancel</Button>
+            <Button
+              variant="primary"
+              disabled={updatingStatus}
+              onClick={() => pendingStatus && handleStatusChange(pendingStatus)}
+            >
+              {updatingStatus ? "Updating…" : "Confirm"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <AddApplicationModal
+        open={editing}
+        onClose={() => setEditing(false)}
+        userId={application.userId}
+        editData={application}
+      />
       <AddTimelineModal
         open={addingTimeline}
         onClose={() => setAddingTimeline(false)}

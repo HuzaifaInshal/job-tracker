@@ -3,7 +3,9 @@
 import { useState, useMemo } from "react";
 import { ApplicationSheet } from "./ApplicationSheet";
 import { AddApplicationModal } from "./AddApplicationModal";
+import { BulkAddModal } from "./BulkAddModal";
 import { StatusBadge } from "@/components/ui/badge";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -22,7 +24,10 @@ import {
   type ApplicationChannel,
   type ApplyType
 } from "@/lib/types";
-import { formatDate } from "@/lib/utils";
+import { formatDate, formatDateTime } from "@/lib/utils";
+import { bulkMarkExpired } from "@/lib/firestore";
+import { useToast } from "@/components/ui/toast";
+import { Loader2 } from "lucide-react";
 import {
   Search,
   Plus,
@@ -34,7 +39,9 @@ import {
   SlidersHorizontal,
   X,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  Layers
 } from "lucide-react";
 
 type SortField = "appliedAt" | "companyName" | "status" | "jobTitle";
@@ -68,6 +75,10 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
   const [sortDir, setSortDir] = useState<SortDir>("desc");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState<PageSize>(10);
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [bulkAddOpen, setBulkAddOpen] = useState(false);
+  const [markingExpired, setMarkingExpired] = useState(false);
+  const { toast } = useToast();
 
   function openApp(app: Application) {
     setSelectedApp(app);
@@ -91,6 +102,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
     setDateFrom("");
     setDateTo("");
     setPage(1);
+    setSelected(new Set());
   }
 
   const hasFilters =
@@ -151,6 +163,47 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const paginated = filtered.slice((page - 1) * pageSize, page * pageSize);
+  const allPageSelected =
+    paginated.length > 0 && paginated.every((a) => selected.has(a.id));
+
+  function toggleSelect(id: string) {
+    setSelected((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  }
+
+  function toggleSelectAll() {
+    if (allPageSelected) {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        paginated.forEach((a) => next.delete(a.id));
+        return next;
+      });
+    } else {
+      setSelected((prev) => {
+        const next = new Set(prev);
+        paginated.forEach((a) => next.add(a.id));
+        return next;
+      });
+    }
+  }
+
+  async function handleBulkExpire() {
+    setMarkingExpired(true);
+    try {
+      await bulkMarkExpired(Array.from(selected));
+      toast(
+        `${selected.size} application${selected.size > 1 ? "s" : ""} marked as expired.`
+      );
+      setSelected(new Set());
+    } catch {
+      toast("Failed to update some applications.", "error");
+    } finally {
+      setMarkingExpired(false);
+    }
+  }
 
   function SortIcon({ field }: { field: SortField }) {
     if (sortField !== field)
@@ -240,7 +293,10 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
               <X className="h-3.5 w-3.5" /> Clear
             </Button>
           )}
-          <div className="ml-auto">
+          <div className="ml-auto flex items-center gap-2">
+            <Button variant="secondary" onClick={() => setBulkAddOpen(true)}>
+              <Layers className="h-4 w-4" /> Bulk Add
+            </Button>
             <Button variant="primary" onClick={() => setAddOpen(true)}>
               <Plus className="h-4 w-4" /> Add Application
             </Button>
@@ -274,6 +330,35 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
         </div>
       </div>
 
+      {/* Bulk action bar */}
+      {selected.size > 0 && (
+        <div className="mx-6 mt-3 flex items-center gap-3 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-500/30">
+          <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+            {selected.size} selected
+          </span>
+          <Button
+            size="sm"
+            variant="secondary"
+            onClick={handleBulkExpire}
+            disabled={markingExpired}
+          >
+            {markingExpired ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Clock className="h-3.5 w-3.5" />
+            )}
+            Mark as Expired
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            onClick={() => setSelected(new Set())}
+          >
+            <X className="h-3.5 w-3.5" /> Clear
+          </Button>
+        </div>
+      )}
+
       {/* Table */}
       <div className="flex-1 overflow-auto">
         {loading ? (
@@ -293,10 +378,18 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
             onClear={clearFilters}
           />
         ) : (
-          <table className="w-full">
+          <table className="w-full min-w-[1400px]">
             <thead className="sticky top-0 z-10">
               <tr className="border-b border-slate-200 bg-slate-50 dark:border-[#1e2d45] dark:bg-[#0b0e1a]">
-                <Th onClick={() => toggleSort("status")} className="w-[140px]">
+                <th className="w-10 px-4 py-3">
+                  <input
+                    type="checkbox"
+                    checked={allPageSelected}
+                    onChange={toggleSelectAll}
+                    className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                  />
+                </th>
+                <Th onClick={() => toggleSort("status")}>
                   Status <SortIcon field="status" />
                 </Th>
                 <Th onClick={() => toggleSort("companyName")}>
@@ -305,14 +398,19 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                 <Th onClick={() => toggleSort("jobTitle")}>
                   Job Title <SortIcon field="jobTitle" />
                 </Th>
-                <Th className="hidden md:table-cell">Channel</Th>
-                <Th className="hidden lg:table-cell">Apply Type</Th>
-                <Th
-                  onClick={() => toggleSort("appliedAt")}
-                  className="hidden md:table-cell"
-                >
+                <Th>Channel</Th>
+                <Th>Apply Type</Th>
+                <Th onClick={() => toggleSort("appliedAt")}>
                   Applied <SortIcon field="appliedAt" />
                 </Th>
+                <Th>Contact</Th>
+                <Th>Posted By</Th>
+                <Th>HR / Company</Th>
+                <Th>HR Link</Th>
+                <Th>Social Post</Th>
+                <Th>Notes</Th>
+                <Th>Created</Th>
+                <Th>Updated</Th>
               </tr>
             </thead>
             <tbody>
@@ -321,51 +419,234 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                   key={app.id}
                   onClick={() => openApp(app)}
                   className={`border-b cursor-pointer group transition-colors duration-100 border-slate-100 dark:border-[#1a2035]/60 ${
-                    app.status === "need_immediate_attention"
-                      ? "bg-orange-50/70 hover:bg-orange-100/80 dark:bg-orange-950/20 dark:hover:bg-orange-950/40"
-                      : app.status === "rejected"
-                      ? "bg-red-50/70 hover:bg-red-100/80 dark:bg-red-950/20 dark:hover:bg-red-950/40"
-                      : app.status === "accepted"
-                      ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
-                      : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
+                    selected.has(app.id)
+                      ? "bg-blue-100/80 dark:bg-blue-950/30"
+                      : app.status === "need_immediate_attention"
+                        ? "bg-orange-50/70 hover:bg-orange-100/80 dark:bg-orange-950/20 dark:hover:bg-orange-950/40"
+                        : app.status === "rejected"
+                          ? "bg-red-50/80 hover:bg-red-100/80 dark:bg-red-950/20 dark:hover:bg-red-950/40"
+                          : app.status === "accepted"
+                            ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
+                            : app.status === "disputed"
+                              ? "bg-purple-50/70 hover:bg-purple-100/80 dark:bg-purple-950/20 dark:hover:bg-purple-950/40"
+                              : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
                   }`}
                 >
+                  <td
+                    className="w-10 px-4 py-3.5"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selected.has(app.id)}
+                      onChange={() => toggleSelect(app.id)}
+                      className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                    />
+                  </td>
                   <Td>
                     <StatusBadge status={app.status} />
                   </Td>
                   <Td>
-                    <div className="flex items-center gap-2.5">
-                      <div className="h-9 w-9 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
-                        <Building2 className="h-3.5 w-3.5 text-gray-600 dark:text-gray-600" />
+                    <Tooltip
+                      content={app.companyName}
+                      copyText={app.companyName}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
+                          <Building2 className="h-3.5 w-3.5 text-gray-600" />
+                        </div>
+                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[140px]">
+                          {app.companyName}
+                        </span>
                       </div>
-                      <span className="font-medium text-slate-800 group-hover:text-slate-900 transition-colors truncate max-w-[180px] dark:text-slate-200 dark:group-hover:text-white">
-                        {app.companyName}
-                      </span>
-                    </div>
+                    </Tooltip>
                   </Td>
                   <Td>
-                    <span className="text-slate-600 font-medium truncate max-w-[200px] block dark:text-gray-600">
-                      {app.jobTitle}
-                    </span>
+                    <Tooltip content={app.jobTitle} copyText={app.jobTitle}>
+                      <span className="text-slate-600 dark:text-gray-400 truncate max-w-[160px] block">
+                        {app.jobTitle}
+                      </span>
+                    </Tooltip>
                   </Td>
-                  <Td className="hidden md:table-cell">
-                    <span className="text-sm font-medium rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-600 dark:border-[#2a3357]">
-                      {app.channel === "other" && app.channelOther
-                        ? app.channelOther
-                        : CHANNEL_LABELS[app.channel]}
-                    </span>
+                  <Td>
+                    {(() => {
+                      const label =
+                        app.channel === "other" && app.channelOther
+                          ? app.channelOther
+                          : CHANNEL_LABELS[app.channel];
+                      return (
+                        <Tooltip content={label} copyText={label}>
+                          <span className="text-sm font-medium rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-400 dark:border-[#2a3357] whitespace-nowrap">
+                            {label}
+                          </span>
+                        </Tooltip>
+                      );
+                    })()}
                   </Td>
-                  <Td className="hidden lg:table-cell">
-                    <span className="font-medium text-slate-500 dark:text-slate-500">
-                      {app.applyType === "other" && app.applyTypeOther
-                        ? app.applyTypeOther
-                        : APPLY_TYPE_LABELS[app.applyType]}
-                    </span>
+                  <Td>
+                    {(() => {
+                      const label =
+                        app.applyType === "other" && app.applyTypeOther
+                          ? app.applyTypeOther
+                          : APPLY_TYPE_LABELS[app.applyType];
+                      return (
+                        <Tooltip content={label} copyText={label}>
+                          <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">
+                            {label}
+                          </span>
+                        </Tooltip>
+                      );
+                    })()}
                   </Td>
-                  <Td className="hidden md:table-cell">
-                    <span className="font-medium text-gray-600 dark:text-slate-500">
-                      {formatDate(app.appliedAt)}
-                    </span>
+                  <Td>
+                    <Tooltip
+                      content={formatDate(app.appliedAt)}
+                      copyText={formatDate(app.appliedAt)}
+                    >
+                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
+                        {formatDate(app.appliedAt)}
+                      </span>
+                    </Tooltip>
+                  </Td>
+                  <Td>
+                    {app.contactLink ? (
+                      <Tooltip
+                        content={app.contactLink}
+                        copyText={app.contactLink}
+                      >
+                        <a
+                          href={
+                            app.contactLink.startsWith("http") ||
+                            app.contactLink.startsWith("mailto")
+                              ? app.contactLink
+                              : `https://${app.contactLink}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
+                        >
+                          {app.contactLink}
+                        </a>
+                      </Tooltip>
+                    ) : (
+                      <Dash />
+                    )}
+                  </Td>
+                  <Td>
+                    {(() => {
+                      const label =
+                        app.postedBy === "hr"
+                          ? "HR / Recruiter"
+                          : app.postedBy === "company"
+                            ? "Company"
+                            : null;
+                      return label ? (
+                        <Tooltip content={label} copyText={label}>
+                          <span className="whitespace-nowrap text-slate-500 dark:text-slate-400">
+                            {label}
+                          </span>
+                        </Tooltip>
+                      ) : (
+                        <Dash />
+                      );
+                    })()}
+                  </Td>
+                  <Td>
+                    {app.hrCompanyName ? (
+                      <Tooltip
+                        content={app.hrCompanyName}
+                        copyText={app.hrCompanyName}
+                      >
+                        <span className="truncate max-w-[120px] block text-slate-500 dark:text-slate-400">
+                          {app.hrCompanyName}
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <Dash />
+                    )}
+                  </Td>
+                  <Td>
+                    {app.hrCompanyLink ? (
+                      <Tooltip
+                        content={app.hrCompanyLink}
+                        copyText={app.hrCompanyLink}
+                      >
+                        <a
+                          href={
+                            app.hrCompanyLink.startsWith("http")
+                              ? app.hrCompanyLink
+                              : `https://${app.hrCompanyLink}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
+                        >
+                          {app.hrCompanyLink}
+                        </a>
+                      </Tooltip>
+                    ) : (
+                      <Dash />
+                    )}
+                  </Td>
+                  <Td>
+                    {app.socialPostLink ? (
+                      <Tooltip
+                        content={app.socialPostLink}
+                        copyText={app.socialPostLink}
+                      >
+                        <a
+                          href={
+                            app.socialPostLink.startsWith("http")
+                              ? app.socialPostLink
+                              : `https://${app.socialPostLink}`
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
+                        >
+                          {app.socialPostLink}
+                        </a>
+                      </Tooltip>
+                    ) : (
+                      <Dash />
+                    )}
+                  </Td>
+                  <Td>
+                    {app.extraNotes ? (
+                      <Tooltip
+                        content={app.extraNotes}
+                        copyText={app.extraNotes}
+                      >
+                        <span className="truncate max-w-[150px] block text-slate-500 dark:text-slate-400">
+                          {app.extraNotes}
+                        </span>
+                      </Tooltip>
+                    ) : (
+                      <Dash />
+                    )}
+                  </Td>
+                  <Td>
+                    <Tooltip
+                      content={formatDateTime(app.createdAt)}
+                      copyText={formatDateTime(app.createdAt)}
+                    >
+                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
+                        {formatDateTime(app.createdAt)}
+                      </span>
+                    </Tooltip>
+                  </Td>
+                  <Td>
+                    <Tooltip
+                      content={formatDateTime(app.updatedAt)}
+                      copyText={formatDateTime(app.updatedAt)}
+                    >
+                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
+                        {formatDateTime(app.updatedAt)}
+                      </span>
+                    </Tooltip>
                   </Td>
                 </tr>
               ))}
@@ -425,6 +706,11 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
         </div>
       )}
 
+      <BulkAddModal
+        open={bulkAddOpen}
+        onClose={() => setBulkAddOpen(false)}
+        userId={userId}
+      />
       <ApplicationSheet
         application={selectedApp}
         open={sheetOpen}
@@ -438,6 +724,10 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
       />
     </div>
   );
+}
+
+function Dash() {
+  return <span className="text-slate-300 dark:text-slate-600">—</span>;
 }
 
 function Th({
