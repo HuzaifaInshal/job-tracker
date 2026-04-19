@@ -8,7 +8,7 @@ import {
   DialogHeader,
   DialogFooter,
   DialogTitle,
-  DialogDescription,
+  DialogDescription
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -19,7 +19,7 @@ import {
   SelectContent,
   SelectItem,
   SelectTrigger,
-  SelectValue,
+  SelectValue
 } from "@/components/ui/select";
 import { createApplication } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
@@ -56,7 +56,7 @@ function emptyEntry(): EntryForm {
     hrCompanyName: "",
     hrCompanyLink: "",
     socialPostLink: "",
-    extraNotes: "",
+    extraNotes: ""
   };
 }
 
@@ -129,21 +129,24 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
             companyName: f.companyName.trim(),
             jobTitle: f.jobTitle.trim(),
             channel: f.channel as ApplicationChannel,
-            channelOther: f.channel === "other" ? f.channelOther.trim() : undefined,
+            channelOther: f.channel === "other" ? f.channelOther.trim() : null,
             applyType: f.applyType as ApplyType,
-            applyTypeOther: f.applyType === "other" ? f.applyTypeOther.trim() : undefined,
+            applyTypeOther:
+              f.applyType === "other" ? f.applyTypeOther.trim() : null,
             appliedAt: new Date(f.appliedAt),
-            contactLink: f.contactLink.trim() || undefined,
+            contactLink: f.contactLink.trim() || null,
             postedBy: f.postedBy as PostedBy,
-            hrCompanyName: f.hrCompanyName.trim() || undefined,
-            hrCompanyLink: f.hrCompanyLink.trim() || undefined,
-            socialPostLink: f.socialPostLink.trim() || undefined,
-            extraNotes: f.extraNotes.trim() || undefined,
-            status: "pending",
+            hrCompanyName: f.hrCompanyName.trim() || null,
+            hrCompanyLink: f.hrCompanyLink.trim() || null,
+            socialPostLink: f.socialPostLink.trim() || null,
+            extraNotes: f.extraNotes.trim() || null,
+            status: "pending"
           })
         )
       );
-      toast(`${entries.length} application${entries.length > 1 ? "s" : ""} added!`);
+      toast(
+        `${entries.length} application${entries.length > 1 ? "s" : ""} added!`
+      );
       handleClose();
     } catch {
       toast("Failed to save some applications.", "error");
@@ -218,7 +221,9 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                           <Input
                             placeholder="Acme Corp"
                             value={f.companyName}
-                            onChange={(e) => setField(idx, "companyName", e.target.value)}
+                            onChange={(e) =>
+                              setField(idx, "companyName", e.target.value)
+                            }
                           />
                         </div>
                         <div>
@@ -226,7 +231,9 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                           <Input
                             placeholder="Software Engineer"
                             value={f.jobTitle}
-                            onChange={(e) => setField(idx, "jobTitle", e.target.value)}
+                            onChange={(e) =>
+                              setField(idx, "jobTitle", e.target.value)
+                            }
                           />
                         </div>
                       </div>
@@ -234,8 +241,13 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Channel *</Label>
-                          <Select value={f.channel} onValueChange={(v) => setField(idx, "channel", v)}>
-                            <SelectTrigger><SelectValue placeholder="Where you found it" /></SelectTrigger>
+                          <Select
+                            value={f.channel}
+                            onValueChange={(v) => setField(idx, "channel", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Where you found it" />
+                            </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="indeed">Indeed</SelectItem>
                               <SelectItem value="linkedin">LinkedIn</SelectItem>
@@ -243,22 +255,45 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                             </SelectContent>
                           </Select>
                           {f.channel === "other" && (
-                            <Input className="mt-2" placeholder="Specify channel" value={f.channelOther} onChange={(e) => setField(idx, "channelOther", e.target.value)} />
+                            <Input
+                              className="mt-2"
+                              placeholder="Specify channel"
+                              value={f.channelOther}
+                              onChange={(e) =>
+                                setField(idx, "channelOther", e.target.value)
+                              }
+                            />
                           )}
                         </div>
                         <div>
                           <Label>Apply Type *</Label>
-                          <Select value={f.applyType} onValueChange={(v) => setField(idx, "applyType", v)}>
-                            <SelectTrigger><SelectValue placeholder="How you applied" /></SelectTrigger>
+                          <Select
+                            value={f.applyType}
+                            onValueChange={(v) => setField(idx, "applyType", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="How you applied" />
+                            </SelectTrigger>
                             <SelectContent>
-                              <SelectItem value="direct">Direct Apply</SelectItem>
-                              <SelectItem value="external">External Website</SelectItem>
+                              <SelectItem value="direct">
+                                Direct Apply
+                              </SelectItem>
+                              <SelectItem value="external">
+                                External Website
+                              </SelectItem>
                               <SelectItem value="email">Email</SelectItem>
                               <SelectItem value="other">Other</SelectItem>
                             </SelectContent>
                           </Select>
                           {f.applyType === "other" && (
-                            <Input className="mt-2" placeholder="Specify apply type" value={f.applyTypeOther} onChange={(e) => setField(idx, "applyTypeOther", e.target.value)} />
+                            <Input
+                              className="mt-2"
+                              placeholder="Specify apply type"
+                              value={f.applyTypeOther}
+                              onChange={(e) =>
+                                setField(idx, "applyTypeOther", e.target.value)
+                              }
+                            />
                           )}
                         </div>
                       </div>
@@ -269,16 +304,24 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                           <Input
                             type="datetime-local"
                             value={f.appliedAt}
-                            onChange={(e) => setField(idx, "appliedAt", e.target.value)}
+                            onChange={(e) =>
+                              setField(idx, "appliedAt", e.target.value)
+                            }
                             className="[color-scheme:dark]"
                           />
                         </div>
                         <div>
                           <Label>{contactLabel}</Label>
                           <Input
-                            placeholder={f.applyType === "email" ? "hr@company.com" : "https://..."}
+                            placeholder={
+                              f.applyType === "email"
+                                ? "hr@company.com"
+                                : "https://..."
+                            }
                             value={f.contactLink}
-                            onChange={(e) => setField(idx, "contactLink", e.target.value)}
+                            onChange={(e) =>
+                              setField(idx, "contactLink", e.target.value)
+                            }
                           />
                         </div>
                       </div>
@@ -286,8 +329,13 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>Posted By</Label>
-                          <Select value={f.postedBy} onValueChange={(v) => setField(idx, "postedBy", v)}>
-                            <SelectTrigger><SelectValue placeholder="Who posted" /></SelectTrigger>
+                          <Select
+                            value={f.postedBy}
+                            onValueChange={(v) => setField(idx, "postedBy", v)}
+                          >
+                            <SelectTrigger>
+                              <SelectValue placeholder="Who posted" />
+                            </SelectTrigger>
                             <SelectContent>
                               <SelectItem value="hr">HR / Recruiter</SelectItem>
                               <SelectItem value="company">Company</SelectItem>
@@ -299,7 +347,9 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                           <Input
                             placeholder="Auto-filled for company posts"
                             value={f.hrCompanyName}
-                            onChange={(e) => setField(idx, "hrCompanyName", e.target.value)}
+                            onChange={(e) =>
+                              setField(idx, "hrCompanyName", e.target.value)
+                            }
                           />
                         </div>
                       </div>
@@ -307,11 +357,23 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                       <div className="grid grid-cols-2 gap-4">
                         <div>
                           <Label>HR / Company Profile Link</Label>
-                          <Input placeholder="https://linkedin.com/in/..." value={f.hrCompanyLink} onChange={(e) => setField(idx, "hrCompanyLink", e.target.value)} />
+                          <Input
+                            placeholder="https://linkedin.com/in/..."
+                            value={f.hrCompanyLink}
+                            onChange={(e) =>
+                              setField(idx, "hrCompanyLink", e.target.value)
+                            }
+                          />
                         </div>
                         <div>
                           <Label>Social Post Link</Label>
-                          <Input placeholder="https://linkedin.com/posts/..." value={f.socialPostLink} onChange={(e) => setField(idx, "socialPostLink", e.target.value)} />
+                          <Input
+                            placeholder="https://linkedin.com/posts/..."
+                            value={f.socialPostLink}
+                            onChange={(e) =>
+                              setField(idx, "socialPostLink", e.target.value)
+                            }
+                          />
                         </div>
                       </div>
 
@@ -321,7 +383,9 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                           rows={2}
                           placeholder="Any additional notes..."
                           value={f.extraNotes}
-                          onChange={(e) => setField(idx, "extraNotes", e.target.value)}
+                          onChange={(e) =>
+                            setField(idx, "extraNotes", e.target.value)
+                          }
                         />
                       </div>
                     </div>
@@ -330,16 +394,25 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
               );
             })}
 
-            <Button type="button" variant="secondary" onClick={addEntry} className="w-full">
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={addEntry}
+              className="w-full"
+            >
               <Plus className="h-4 w-4" /> Add Another Entry
             </Button>
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="ghost" onClick={handleClose}>Cancel</Button>
+            <Button type="button" variant="ghost" onClick={handleClose}>
+              Cancel
+            </Button>
             <Button type="submit" variant="primary" disabled={saving}>
               {saving && <Loader2 className="h-4 w-4 animate-spin" />}
-              {saving ? "Saving…" : `Add ${entries.length} Application${entries.length > 1 ? "s" : ""}`}
+              {saving
+                ? "Saving…"
+                : `Add ${entries.length} Application${entries.length > 1 ? "s" : ""}`}
             </Button>
           </DialogFooter>
         </form>
