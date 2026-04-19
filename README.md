@@ -29,11 +29,11 @@ JobTrack is a multi-platform job application tracker. Log every application, man
 
 ## Screenshots
 
-![Dashboard](./web%20application/public/readme/1.png)
+![Dashboard](./web%20application/public/static/1.png)
 
-![Application Details & Timeline](./web%20application/public/readme/2.png)
+![Application Details & Timeline](./web%20application/public/static/2.png)
 
-![Add / Edit Application](./web%20application/public/readme/3.png)
+![Add / Edit Application](./web%20application/public/static/3.png)
 
 ---
 
@@ -49,10 +49,10 @@ job-tracker/
 
 ## Platforms
 
-| Platform | Status | Docs |
-|---|---|---|
-| Web Application | ✅ Live | [README](./web%20application/README.md) |
-| Chrome Extension | 🚧 In Progress | [README](./chrome-extension/README.md) |
+| Platform         | Status         | Docs                                    |
+| ---------------- | -------------- | --------------------------------------- |
+| Web Application  | ✅ Live        | [README](./web%20application/README.md) |
+| Chrome Extension | 🚧 In Progress | [README](./chrome-extension/README.md)  |
 
 ---
 

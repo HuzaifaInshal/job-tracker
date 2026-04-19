@@ -1,6 +1,6 @@
 # JobTrack — Web Application
 
-![JobTrack Dashboard](./public/readme/1.png)
+![JobTrack Dashboard](./public/static/1.png)
 
 ---
 
@@ -8,15 +8,15 @@
 
 ### Dashboard
 
-![Dashboard](./public/readme/1.png)
+![Dashboard](./public/static/1.png)
 
 ### Application Details & Timeline
 
-![Application Sheet](./public/readme/2.png)
+![Application Sheet](./public/static/2.png)
 
 ### Add / Edit Application
 
-![Add Application](./public/readme/3.png)
+![Add Application](./public/static/3.png)
 
 ---
 
