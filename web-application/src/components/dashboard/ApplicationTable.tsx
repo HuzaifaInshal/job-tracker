@@ -218,7 +218,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
   }
 
   return (
-    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 pt-3 border border-gray-200 bg-white/90 shadow rounded-lg">
+    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 pt-3 border border-gray-200 dark:border-[#1e2d45] bg-white/90 dark:bg-black shadow rounded-lg">
       {/* Toolbar */}
       <div className="px-6 py-4 border-b space-y-3 border-slate-200 dark:border-[#1e2d45]">
         <div className="flex items-center gap-3 flex-wrap">
