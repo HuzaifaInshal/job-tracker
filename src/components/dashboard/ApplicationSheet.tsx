@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { format } from "date-fns";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "@/components/ui/badge";
@@ -19,6 +20,7 @@ import {
   SelectTrigger,
   SelectValue
 } from "@/components/ui/select";
+import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { AddApplicationModal } from "./AddApplicationModal";
@@ -81,6 +83,13 @@ export function ApplicationSheet({
   const [editing, setEditing] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<ApplicationStatus | null>(null);
   const [statusNote, setStatusNote] = useState("");
+  const [statusDate, setStatusDate] = useState("");
+
+  function openStatusConfirm(status: ApplicationStatus) {
+    setPendingStatus(status);
+    setStatusDate(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+    setStatusNote("");
+  }
 
   if (!application) return null;
 
@@ -90,9 +99,11 @@ export function ApplicationSheet({
     setPendingStatus(null);
     const note = statusNote.trim();
     setStatusNote("");
+    const receivedAt = statusDate ? new Date(statusDate) : new Date();
+    setStatusDate("");
     try {
       await updateApplicationStatus(application.id, status);
-      await createAutoTimeline(application.id, status, note || undefined);
+      await createAutoTimeline(application.id, status, note || undefined, receivedAt);
       toast("Status updated");
     } catch {
       toast("Failed to update status.", "error");
@@ -146,7 +157,7 @@ export function ApplicationSheet({
                 </Button>
                 <Select
                   value={application.status}
-                  onValueChange={(v) => setPendingStatus(v as ApplicationStatus)}
+                  onValueChange={(v) => openStatusConfirm(v as ApplicationStatus)}
                   disabled={updatingStatus}
                 >
                   <SelectTrigger className="h-9 text-sm w-38 border-slate-200 dark:border-[#2a3357]">
@@ -398,7 +409,7 @@ export function ApplicationSheet({
           </div>
         </SheetContent>
       </Sheet>
-      <Dialog open={!!pendingStatus} onOpenChange={(o) => { if (!o) { setPendingStatus(null); setStatusNote(""); } }}>
+      <Dialog open={!!pendingStatus} onOpenChange={(o) => { if (!o) { setPendingStatus(null); setStatusNote(""); setStatusDate(""); } }}>
         <DialogContent showClose={false}>
           <DialogHeader>
             <DialogTitle>Change Status</DialogTitle>
@@ -406,19 +417,31 @@ export function ApplicationSheet({
               Change status from <strong>{STATUS_LABELS[application.status]}</strong> to <strong>{pendingStatus ? STATUS_LABELS[pendingStatus] : ""}</strong>?
             </DialogDescription>
           </DialogHeader>
-          <div className="px-6 pb-2">
-            <Label htmlFor="status-note">Note <span className="text-slate-400 dark:text-slate-600 font-normal">(optional)</span></Label>
-            <Textarea
-              id="status-note"
-              rows={3}
-              placeholder="Add a note about this status change..."
-              value={statusNote}
-              onChange={(e) => setStatusNote(e.target.value)}
-              className="mt-1.5"
-            />
+          <div className="px-6 pb-2 space-y-4">
+            <div>
+              <Label htmlFor="status-date">Date & Time</Label>
+              <Input
+                id="status-date"
+                type="datetime-local"
+                value={statusDate}
+                onChange={(e) => setStatusDate(e.target.value)}
+                className="mt-1.5 [color-scheme:dark]"
+              />
+            </div>
+            <div>
+              <Label htmlFor="status-note">Note <span className="text-slate-400 dark:text-slate-600 font-normal">(optional)</span></Label>
+              <Textarea
+                id="status-note"
+                rows={3}
+                placeholder="Add a note about this status change..."
+                value={statusNote}
+                onChange={(e) => setStatusNote(e.target.value)}
+                className="mt-1.5"
+              />
+            </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => { setPendingStatus(null); setStatusNote(""); }}>Cancel</Button>
+            <Button variant="ghost" onClick={() => { setPendingStatus(null); setStatusNote(""); setStatusDate(""); }}>Cancel</Button>
             <Button
               variant="primary"
               disabled={updatingStatus}

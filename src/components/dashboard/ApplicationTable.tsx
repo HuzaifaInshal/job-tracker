@@ -409,8 +409,6 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                 <Th>HR Link</Th>
                 <Th>Social Post</Th>
                 <Th>Notes</Th>
-                <Th>Created</Th>
-                <Th>Updated</Th>
               </tr>
             </thead>
             <tbody>
@@ -429,7 +427,9 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                             ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
                             : app.status === "disputed"
                               ? "bg-purple-50/70 hover:bg-purple-100/80 dark:bg-purple-950/20 dark:hover:bg-purple-950/40"
-                              : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
+                              : app.status === "responded"
+                                ? "bg-cyan-50/70 hover:bg-cyan-100/80 dark:bg-cyan-950/20 dark:hover:bg-cyan-950/40"
+                                : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
                   }`}
                 >
                   <td
@@ -627,26 +627,6 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
                     ) : (
                       <Dash />
                     )}
-                  </Td>
-                  <Td>
-                    <Tooltip
-                      content={formatDateTime(app.createdAt)}
-                      copyText={formatDateTime(app.createdAt)}
-                    >
-                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
-                        {formatDateTime(app.createdAt)}
-                      </span>
-                    </Tooltip>
-                  </Td>
-                  <Td>
-                    <Tooltip
-                      content={formatDateTime(app.updatedAt)}
-                      copyText={formatDateTime(app.updatedAt)}
-                    >
-                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
-                        {formatDateTime(app.updatedAt)}
-                      </span>
-                    </Tooltip>
                   </Td>
                 </tr>
               ))}
