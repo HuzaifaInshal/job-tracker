@@ -1,10 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { subscribeToApplications } from '@/lib/firestore';
+import { subscribeToApplications, subscribeToArchivedApplications } from '@/lib/firestore';
 import type { Application } from '@/lib/types';
 
-export function useApplications(userId: string | undefined) {
+function useAppSubscription(
+  userId: string | undefined,
+  subscribe: typeof subscribeToApplications
+) {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -15,12 +18,20 @@ export function useApplications(userId: string | undefined) {
       return;
     }
     setLoading(true);
-    const unsub = subscribeToApplications(userId, (apps) => {
+    const unsub = subscribe(userId, (apps) => {
       setApplications(apps);
       setLoading(false);
     });
     return unsub;
-  }, [userId]);
+  }, [userId, subscribe]);
 
   return { applications, loading };
+}
+
+export function useApplications(userId: string | undefined) {
+  return useAppSubscription(userId, subscribeToApplications);
+}
+
+export function useArchivedApplications(userId: string | undefined) {
+  return useAppSubscription(userId, subscribeToArchivedApplications);
 }

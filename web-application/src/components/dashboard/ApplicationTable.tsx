@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useRef, useEffect } from "react";
 import { ApplicationSheet } from "./ApplicationSheet";
 import { AddApplicationModal } from "./AddApplicationModal";
 import { BulkAddModal } from "./BulkAddModal";
@@ -24,8 +24,8 @@ import {
   type ApplicationChannel,
   type ApplyType
 } from "@/lib/types";
-import { formatDate, formatDateTime } from "@/lib/utils";
-import { bulkMarkExpired } from "@/lib/firestore";
+import { formatDate } from "@/lib/utils";
+import { bulkMarkExpired, bulkSetArchived } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
 import { Loader2 } from "lucide-react";
 import {
@@ -41,7 +41,10 @@ import {
   ChevronLeft,
   ChevronRight,
   Clock,
-  Layers
+  Layers,
+  Archive,
+  ArchiveRestore,
+  ChevronDown
 } from "lucide-react";
 
 type SortField = "appliedAt" | "companyName" | "status" | "jobTitle";
@@ -53,9 +56,10 @@ interface Props {
   applications: Application[];
   loading: boolean;
   userId: string;
+  isArchived?: boolean;
 }
 
-export function ApplicationTable({ applications, loading, userId }: Props) {
+export function ApplicationTable({ applications, loading, userId, isArchived = false }: Props) {
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [sheetOpen, setSheetOpen] = useState(false);
   const [addOpen, setAddOpen] = useState(false);
@@ -77,8 +81,22 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
   const [pageSize, setPageSize] = useState<PageSize>(10);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [bulkAddOpen, setBulkAddOpen] = useState(false);
+  const [bulkAddMode, setBulkAddMode] = useState<"full" | "quick">("full");
+  const [bulkDropdownOpen, setBulkDropdownOpen] = useState(false);
+  const bulkDropdownRef = useRef<HTMLDivElement>(null);
   const [markingExpired, setMarkingExpired] = useState(false);
+  const [archiving, setArchiving] = useState(false);
   const { toast } = useToast();
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (bulkDropdownRef.current && !bulkDropdownRef.current.contains(e.target as Node)) {
+        setBulkDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClick);
+    return () => document.removeEventListener("mousedown", handleClick);
+  }, []);
 
   function openApp(app: Application) {
     setSelectedApp(app);
@@ -190,6 +208,21 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
     }
   }
 
+  async function handleBulkArchive(archive: boolean) {
+    setArchiving(true);
+    try {
+      await bulkSetArchived(Array.from(selected), archive);
+      toast(
+        `${selected.size} application${selected.size > 1 ? "s" : ""} ${archive ? "archived" : "unarchived"}.`
+      );
+      setSelected(new Set());
+    } catch {
+      toast("Failed to update some applications.", "error");
+    } finally {
+      setArchiving(false);
+    }
+  }
+
   async function handleBulkExpire() {
     setMarkingExpired(true);
     try {
@@ -294,12 +327,49 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
             </Button>
           )}
           <div className="ml-auto flex items-center gap-2">
-            <Button variant="secondary" onClick={() => setBulkAddOpen(true)}>
-              <Layers className="h-4 w-4" /> Bulk Add
-            </Button>
-            <Button variant="primary" onClick={() => setAddOpen(true)}>
-              <Plus className="h-4 w-4" /> Add Application
-            </Button>
+            {!isArchived && (
+              <div className="relative" ref={bulkDropdownRef}>
+                <div className="flex items-center">
+                  <Button
+                    variant="secondary"
+                    className="rounded-r-none border-r-0"
+                    onClick={() => { setBulkAddMode("full"); setBulkAddOpen(true); }}
+                  >
+                    <Layers className="h-4 w-4" /> Bulk Add
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="rounded-l-none px-2"
+                    onClick={() => setBulkDropdownOpen((o) => !o)}
+                  >
+                    <ChevronDown className="h-4 w-4" />
+                  </Button>
+                </div>
+                {bulkDropdownOpen && (
+                  <div className="absolute right-0 top-full mt-1 z-20 min-w-[180px] rounded-xl border shadow-lg border-slate-200 bg-white dark:border-[#2a3357] dark:bg-[#111827]">
+                    <button
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-[#1e2540] rounded-t-xl"
+                      onClick={() => { setBulkAddMode("full"); setBulkAddOpen(true); setBulkDropdownOpen(false); }}
+                    >
+                      <span className="font-medium">Full Bulk Add</span>
+                      <p className="text-gray-500 text-xs mt-0.5">All fields per entry</p>
+                    </button>
+                    <button
+                      className="w-full text-left px-3 py-2.5 text-sm hover:bg-slate-50 dark:hover:bg-[#1e2540] rounded-b-xl border-t border-slate-100 dark:border-[#1e2d45]"
+                      onClick={() => { setBulkAddMode("quick"); setBulkAddOpen(true); setBulkDropdownOpen(false); }}
+                    >
+                      <span className="font-medium">Quick Bulk Add</span>
+                      <p className="text-gray-500 text-xs mt-0.5">Company & title only</p>
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+            {!isArchived && (
+              <Button variant="primary" onClick={() => setAddOpen(true)}>
+                <Plus className="h-4 w-4" /> Add Application
+              </Button>
+            )}
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -336,18 +406,35 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
           <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
             {selected.size} selected
           </span>
+          {!isArchived && (
+            <Button
+              size="sm"
+              variant="secondary"
+              onClick={handleBulkExpire}
+              disabled={markingExpired || archiving}
+            >
+              {markingExpired ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Clock className="h-3.5 w-3.5" />
+              )}
+              Mark as Expired
+            </Button>
+          )}
           <Button
             size="sm"
             variant="secondary"
-            onClick={handleBulkExpire}
-            disabled={markingExpired}
+            onClick={() => handleBulkArchive(!isArchived)}
+            disabled={archiving || markingExpired}
           >
-            {markingExpired ? (
+            {archiving ? (
               <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : isArchived ? (
+              <ArchiveRestore className="h-3.5 w-3.5" />
             ) : (
-              <Clock className="h-3.5 w-3.5" />
+              <Archive className="h-3.5 w-3.5" />
             )}
-            Mark as Expired
+            {isArchived ? "Unarchive" : "Archive"}
           </Button>
           <Button
             size="sm"
@@ -690,6 +777,7 @@ export function ApplicationTable({ applications, loading, userId }: Props) {
         open={bulkAddOpen}
         onClose={() => setBulkAddOpen(false)}
         userId={userId}
+        mode={bulkAddMode}
       />
       <ApplicationSheet
         application={selectedApp}

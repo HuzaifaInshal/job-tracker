@@ -64,17 +64,38 @@ interface Props {
   open: boolean;
   onClose: () => void;
   userId: string;
+  mode?: "full" | "quick";
 }
 
-export function BulkAddModal({ open, onClose, userId }: Props) {
+export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
   const { toast } = useToast();
   const [saving, setSaving] = useState(false);
   const [entries, setEntries] = useState<EntryForm[]>([emptyEntry()]);
   const [expanded, setExpanded] = useState<number[]>([0]);
 
+  // Shared fields for quick mode
+  const [sharedChannel, setSharedChannel] = useState<ApplicationChannel | "">("");
+  const [sharedChannelOther, setSharedChannelOther] = useState("");
+  const [sharedApplyType, setSharedApplyType] = useState<ApplyType | "">("");
+  const [sharedApplyTypeOther, setSharedApplyTypeOther] = useState("");
+  const [sharedAppliedAt, setSharedAppliedAt] = useState(
+    format(new Date(), "yyyy-MM-dd'T'HH:mm")
+  );
+  const [sharedPostedBy, setSharedPostedBy] = useState<PostedBy | "">("");
+  const [sharedContactLink, setSharedContactLink] = useState("");
+  const [sharedExtraNotes, setSharedExtraNotes] = useState("");
+
   function handleClose() {
     setEntries([emptyEntry()]);
     setExpanded([0]);
+    setSharedChannel("");
+    setSharedChannelOther("");
+    setSharedApplyType("");
+    setSharedApplyTypeOther("");
+    setSharedAppliedAt(format(new Date(), "yyyy-MM-dd'T'HH:mm"));
+    setSharedPostedBy("");
+    setSharedContactLink("");
+    setSharedExtraNotes("");
     onClose();
   }
 
@@ -113,6 +134,49 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
 
   async function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (mode === "quick") {
+      if (!sharedChannel || !sharedApplyType) {
+        toast("Fill in channel and apply type.", "error");
+        return;
+      }
+      for (let i = 0; i < entries.length; i++) {
+        const f = entries[i];
+        if (!f.companyName || !f.jobTitle) {
+          toast(`Entry ${i + 1}: company name and job title are required.`, "error");
+          return;
+        }
+      }
+      setSaving(true);
+      try {
+        await Promise.all(
+          entries.map((f) =>
+            createApplication(userId, {
+              companyName: f.companyName.trim(),
+              jobTitle: f.jobTitle.trim(),
+              channel: sharedChannel as ApplicationChannel,
+              channelOther: sharedChannel === "other" ? sharedChannelOther.trim() : null,
+              applyType: sharedApplyType as ApplyType,
+              applyTypeOther: sharedApplyType === "other" ? sharedApplyTypeOther.trim() : null,
+              appliedAt: new Date(sharedAppliedAt),
+              contactLink: sharedContactLink.trim() || null,
+              postedBy: (sharedPostedBy || "company") as PostedBy,
+              hrCompanyName: sharedPostedBy === "company" ? f.companyName.trim() : null,
+              hrCompanyLink: null,
+              socialPostLink: null,
+              extraNotes: sharedExtraNotes.trim() || null,
+              status: "pending"
+            })
+          )
+        );
+        toast(`${entries.length} application${entries.length > 1 ? "s" : ""} added!`);
+        handleClose();
+      } catch {
+        toast("Failed to save some applications.", "error");
+      } finally {
+        setSaving(false);
+      }
+      return;
+    }
     for (let i = 0; i < entries.length; i++) {
       const f = entries[i];
       if (!f.companyName || !f.jobTitle || !f.channel || !f.applyType) {
@@ -160,14 +224,111 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
       <DialogContent className="max-w-2xl md:max-w-4xl max-h-[90vh] overflow-y-auto">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Bulk Add Applications</DialogTitle>
+            <DialogTitle>{mode === "quick" ? "Quick Bulk Add" : "Bulk Add Applications"}</DialogTitle>
             <DialogDescription>
-              Add multiple job applications at once
+              {mode === "quick"
+                ? "Add company & job title per entry — shared fields apply to all"
+                : "Add multiple job applications at once"}
             </DialogDescription>
           </DialogHeader>
 
           <div className="px-6 space-y-3">
-            {entries.map((f, idx) => {
+            {mode === "quick" ? (
+              <>
+                {/* Shared fields */}
+                <div className="border border-slate-200 dark:border-[#1e2d45] rounded-xl p-4 space-y-4 bg-slate-50 dark:bg-[#0b0e1a]">
+                  <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Shared Fields (applied to all entries)</p>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Channel *</Label>
+                      <Select value={sharedChannel} onValueChange={(v) => setSharedChannel(v as ApplicationChannel)}>
+                        <SelectTrigger><SelectValue placeholder="Where you found it" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="indeed">Indeed</SelectItem>
+                          <SelectItem value="linkedin">LinkedIn</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {sharedChannel === "other" && (
+                        <Input className="mt-2" placeholder="Specify channel" value={sharedChannelOther} onChange={(e) => setSharedChannelOther(e.target.value)} />
+                      )}
+                    </div>
+                    <div>
+                      <Label>Apply Type *</Label>
+                      <Select value={sharedApplyType} onValueChange={(v) => setSharedApplyType(v as ApplyType)}>
+                        <SelectTrigger><SelectValue placeholder="How you applied" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="direct">Direct Apply</SelectItem>
+                          <SelectItem value="external">External Website</SelectItem>
+                          <SelectItem value="email">Email</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      {sharedApplyType === "other" && (
+                        <Input className="mt-2" placeholder="Specify apply type" value={sharedApplyTypeOther} onChange={(e) => setSharedApplyTypeOther(e.target.value)} />
+                      )}
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Date & Time Applied</Label>
+                      <Input type="datetime-local" value={sharedAppliedAt} onChange={(e) => setSharedAppliedAt(e.target.value)} className="[color-scheme:dark]" />
+                    </div>
+                    <div>
+                      <Label>Posted By</Label>
+                      <Select value={sharedPostedBy} onValueChange={(v) => setSharedPostedBy(v as PostedBy)}>
+                        <SelectTrigger><SelectValue placeholder="Who posted" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="hr">HR / Recruiter</SelectItem>
+                          <SelectItem value="company">Company</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label>Contact Link</Label>
+                      <Input placeholder="https://... or email" value={sharedContactLink} onChange={(e) => setSharedContactLink(e.target.value)} />
+                    </div>
+                    <div>
+                      <Label>Extra Notes</Label>
+                      <Input placeholder="Any notes..." value={sharedExtraNotes} onChange={(e) => setSharedExtraNotes(e.target.value)} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Per-entry rows */}
+                <div className="space-y-2">
+                  {entries.map((f, idx) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <span className="text-sm font-semibold text-slate-400 w-6 shrink-0">#{idx + 1}</span>
+                      <Input
+                        placeholder="Company Name *"
+                        value={f.companyName}
+                        onChange={(e) => setField(idx, "companyName", e.target.value)}
+                        className="flex-1"
+                      />
+                      <Input
+                        placeholder="Job Title *"
+                        value={f.jobTitle}
+                        onChange={(e) => setField(idx, "jobTitle", e.target.value)}
+                        className="flex-1"
+                      />
+                      {entries.length > 1 && (
+                        <button
+                          type="button"
+                          onClick={() => removeEntry(idx)}
+                          className="p-1.5 rounded hover:bg-red-100 dark:hover:bg-red-900/30 text-red-400 transition-colors shrink-0"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </>
+            ) : (
+              entries.map((f, idx) => {
               const isOpen = expanded.includes(idx);
               const contactLabel =
                 f.applyType === "email"
@@ -392,7 +553,7 @@ export function BulkAddModal({ open, onClose, userId }: Props) {
                   )}
                 </div>
               );
-            })}
+            }))}
 
             <Button
               type="button"

@@ -42,6 +42,7 @@ function appFromDoc(id: string, data: Record<string, unknown>): Application {
     socialPostLink: data.socialPostLink as string | null,
     extraNotes: data.extraNotes as string | null,
     status: data.status as ApplicationStatus,
+    archived: (data.archived as boolean) ?? false,
     createdAt: toDate(data.createdAt as Timestamp),
     updatedAt: toDate(data.updatedAt as Timestamp)
   };
@@ -68,6 +69,25 @@ export function subscribeToApplications(
   const q = query(
     collection(db, "applications"),
     where("userId", "==", userId),
+    where("archived", "!=", true),
+    orderBy("archived"),
+    orderBy("createdAt", "desc")
+  );
+  return onSnapshot(q, (snap) => {
+    const apps = snap.docs.map((d) => appFromDoc(d.id, d.data()));
+    callback(apps);
+  });
+}
+
+export function subscribeToArchivedApplications(
+  userId: string,
+  callback: (apps: Application[]) => void
+): Unsubscribe {
+  const db = getFirebaseDb();
+  const q = query(
+    collection(db, "applications"),
+    where("userId", "==", userId),
+    where("archived", "==", true),
     orderBy("createdAt", "desc")
   );
   return onSnapshot(q, (snap) => {
@@ -78,12 +98,13 @@ export function subscribeToApplications(
 
 export async function createApplication(
   userId: string,
-  data: Omit<Application, "id" | "userId" | "createdAt" | "updatedAt">
+  data: Omit<Application, "id" | "userId" | "createdAt" | "updatedAt" | "archived">
 ): Promise<string> {
   const db = getFirebaseDb();
   const ref = await addDoc(collection(db, "applications"), {
     ...data,
     userId,
+    archived: false,
     appliedAt: Timestamp.fromDate(data.appliedAt),
     status: data.status || "pending",
     createdAt: serverTimestamp(),
@@ -184,6 +205,15 @@ export async function deleteTimeline(
 
 export async function bulkMarkExpired(ids: string[]): Promise<void> {
   await Promise.all(ids.map((id) => updateApplicationStatus(id, "expired")));
+}
+
+export async function bulkSetArchived(ids: string[], archived: boolean): Promise<void> {
+  const db = getFirebaseDb();
+  await Promise.all(
+    ids.map((id) =>
+      updateDoc(doc(db, "applications", id), { archived, updatedAt: serverTimestamp() })
+    )
+  );
 }
 
 export async function ensureUserDoc(user: {

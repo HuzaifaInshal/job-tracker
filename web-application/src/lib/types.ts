@@ -30,6 +30,7 @@ export interface Application {
   socialPostLink: string | null;
   extraNotes: string | null;
   status: ApplicationStatus;
+  archived: boolean;
   createdAt: Date;
   updatedAt: Date;
 }
