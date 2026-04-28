@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import * as Avatar from "@radix-ui/react-avatar";
-import { Briefcase, LogOut, ChevronDown, Archive } from "lucide-react";
+import { Briefcase, LogOut, ChevronDown, Archive, BarChart2 } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import type { Application, ApplicationStatus } from "@/lib/types";
@@ -26,6 +26,7 @@ export function DashboardHeader({ applications }: Props) {
   const { user, logout } = useAuth();
   const pathname = usePathname();
   const isArchived = pathname === "/dashboard/archived";
+  const isAnalytics = pathname === "/dashboard/analytics";
 
   const counts = SUMMARY_STATUSES.reduce<Record<ApplicationStatus, number>>(
     (acc, s) => ({
@@ -77,6 +78,16 @@ export function DashboardHeader({ applications }: Props) {
             }`}
           >
             <Archive className="h-3.5 w-3.5" /> Archived
+          </Link>
+          <Link
+            href="/dashboard/analytics"
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              isAnalytics
+                ? "bg-slate-100 text-slate-700 dark:bg-[#1e2540] dark:text-slate-200"
+                : "text-slate-500 hover:bg-slate-100 dark:text-gray-600 dark:hover:bg-[#1a2035]"
+            }`}
+          >
+            <BarChart2 className="h-3.5 w-3.5" /> Analytics
           </Link>
         </div>
 

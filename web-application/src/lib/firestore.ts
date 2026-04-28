@@ -203,6 +203,24 @@ export async function deleteTimeline(
   );
 }
 
+export async function getAllTimelinesForUser(
+  applicationIds: string[]
+): Promise<Timeline[]> {
+  if (applicationIds.length === 0) return [];
+  const db = getFirebaseDb();
+  const results = await Promise.all(
+    applicationIds.map((id) =>
+      getDocs(
+        query(
+          collection(db, "applications", id, "timelines"),
+          orderBy("receivedAt", "desc")
+        )
+      ).then((snap) => snap.docs.map((d) => timelineFromDoc(d.id, d.data())))
+    )
+  );
+  return results.flat();
+}
+
 export async function bulkMarkExpired(ids: string[]): Promise<void> {
   await Promise.all(ids.map((id) => updateApplicationStatus(id, "expired")));
 }
