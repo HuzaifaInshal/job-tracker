@@ -36,15 +36,6 @@ body {
 .scrollbar-none::-webkit-scrollbar { display: none; }
 
 /* ── Animations ── */
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-12px) rotate(0.5deg); }
-  66% { transform: translateY(-6px) rotate(-0.5deg); }
-}
-@keyframes float-slow {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-20px); }
-}
 @keyframes shimmer {
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
@@ -52,10 +43,6 @@ body {
 @keyframes glow-pulse {
   0%, 100% { opacity: 0.4; transform: scale(1); }
   50% { opacity: 0.7; transform: scale(1.05); }
-}
-@keyframes fade-up {
-  from { opacity: 0; transform: translateY(24px); }
-  to { opacity: 1; transform: translateY(0); }
 }
 @keyframes fade-in {
   from { opacity: 0; }
@@ -80,26 +67,18 @@ body {
   from { transform: translateX(0); }
   to { transform: translateX(-50%); }
 }
-@keyframes border-beam {
-  0% { offset-distance: 0%; }
-  100% { offset-distance: 100%; }
+@keyframes marquee-reverse {
+  from { transform: translateX(-50%); }
+  to { transform: translateX(0); }
 }
 
 /* Utility classes */
 .font-display { font-family: var(--font-syne), system-ui, sans-serif; }
 
-.animate-float { animation: float 6s ease-in-out infinite; }
-.animate-float-slow { animation: float-slow 8s ease-in-out infinite; }
 .animate-glow-pulse { animation: glow-pulse 3s ease-in-out infinite; }
-.animate-fade-up { animation: fade-up 0.6s ease both; }
 .animate-spin-slow { animation: spin-slow 12s linear infinite; }
-.animate-marquee { animation: marquee 30s linear infinite; }
-
-.animate-fade-up-1 { animation: fade-up 0.6s 0.1s ease both; }
-.animate-fade-up-2 { animation: fade-up 0.6s 0.2s ease both; }
-.animate-fade-up-3 { animation: fade-up 0.6s 0.3s ease both; }
-.animate-fade-up-4 { animation: fade-up 0.6s 0.4s ease both; }
-.animate-fade-up-5 { animation: fade-up 0.6s 0.5s ease both; }
+.animate-marquee { animation: marquee 35s linear infinite; }
+.animate-marquee-reverse { animation: marquee-reverse 35s linear infinite; }
 
 .text-shimmer {
   background: linear-gradient(
@@ -144,4 +123,40 @@ body {
   height: 100%;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
   animation: beam 3s ease-in-out infinite;
+}
+
+/* Grid overlay */
+.bg-grid {
+  background-image:
+    linear-gradient(rgba(148,163,184,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(148,163,184,0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+}
+
+/* Glow orb */
+.glow-orb {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(100px);
+  pointer-events: none;
+}
+
+/* Card hover lift */
+.card-hover {
+  transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+}
+
+/* Step connector line */
+.step-line {
+  position: absolute;
+  top: 28px;
+  left: calc(50% + 2rem);
+  right: calc(-50% + 2rem);
+  height: 1px;
+  background: linear-gradient(90deg, #1e2d45, transparent);
+  transform-origin: left;
 }
