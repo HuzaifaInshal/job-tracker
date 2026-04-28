@@ -34,8 +34,8 @@ export function AnalyticsDashboard({ applications, loading, userId }: Props) {
     [applications, archivedApps]
   );
 
-  const appIds = useMemo(() => applications.map((a) => a.id), [applications]);
-  const { timelines, loading: timelinesLoading } = useAllTimelines(appIds);
+  const allAppIds = useMemo(() => allApplications.map((a) => a.id), [allApplications]);
+  const { timelines, loading: timelinesLoading } = useAllTimelines(allAppIds);
 
   if (loading) {
     return (
@@ -61,7 +61,7 @@ export function AnalyticsDashboard({ applications, loading, userId }: Props) {
       <div>
         <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Analytics</h1>
         <p className="text-sm text-slate-400 dark:text-slate-500 mt-1">
-          Insights across {applications.length} active application{applications.length !== 1 ? "s" : ""}
+          Insights across {allApplications.length} application{allApplications.length !== 1 ? "s" : ""} ({applications.length} active, {archivedApps.length} archived)
         </p>
       </div>
 
@@ -85,18 +85,18 @@ export function AnalyticsDashboard({ applications, loading, userId }: Props) {
 
       {/* Tab content */}
       {activeTab === "overview" && (
-        <OverviewTab applications={applications} allApplications={allApplications} />
+        <OverviewTab applications={allApplications} />
       )}
       {activeTab === "timeline" && (
         <TimelineInsightsTab
-          applications={applications}
+          applications={allApplications}
           timelines={timelines}
           loading={timelinesLoading}
         />
       )}
-      {activeTab === "trends" && <TrendsTab applications={applications} />}
+      {activeTab === "trends" && <TrendsTab applications={allApplications} />}
       {activeTab === "funnel" && (
-        <FunnelTab applications={applications} timelines={timelines} />
+        <FunnelTab applications={allApplications} timelines={timelines} />
       )}
     </div>
   );

@@ -15,7 +15,6 @@ import {
 
 interface Props {
   applications: Application[];
-  allApplications: Application[]; // includes archived
 }
 
 const STATUS_HEX: Record<ApplicationStatus, string> = {
@@ -44,9 +43,9 @@ const tooltipStyle = {
   cursor: { fill: "rgba(255,255,255,0.04)" },
 };
 
-export function OverviewTab({ applications, allApplications }: Props) {
+export function OverviewTab({ applications }: Props) {
   const active = applications.filter((a) => !a.archived);
-  const archived = allApplications.filter((a) => a.archived);
+  const archived = applications.filter((a) => a.archived);
   const accepted = active.filter((a) => a.status === "accepted").length;
   const pending = active.filter((a) => a.status === "pending").length;
   const rejected = active.filter((a) => a.status === "rejected").length;
