@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { createApplication } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
+import { normalizeUnicode } from "@/components/ui/input";
 import type { ApplicationChannel, ApplyType, PostedBy } from "@/lib/types";
 import { Loader2, Plus, Trash2, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -103,7 +104,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
     setEntries((prev) =>
       prev.map((e, i) => {
         if (i !== idx) return e;
-        const next = { ...e, [field]: value };
+        const next = { ...e, [field]: normalizeUnicode(value) };
         if (field === "postedBy" && value === "company" && !next.hrCompanyName)
           next.hrCompanyName = next.companyName;
         if (field === "companyName" && next.postedBy === "company")

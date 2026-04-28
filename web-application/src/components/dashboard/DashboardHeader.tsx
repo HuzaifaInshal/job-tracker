@@ -15,11 +15,8 @@ interface Props {
 }
 
 const SUMMARY_STATUSES: ApplicationStatus[] = [
-  "pending",
-  "accepted",
   "need_immediate_attention",
-  "rejected",
-  "expired"
+  "responded"
 ];
 
 export function DashboardHeader({ applications }: Props) {
@@ -93,6 +90,11 @@ export function DashboardHeader({ applications }: Props) {
 
         {/* Stats */}
         <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-none">
+          {applications.length > 0 && (
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium border shrink-0 border-slate-200 bg-slate-50 text-slate-500 dark:border-[#2a3357] dark:bg-[#111827] dark:text-gray-600">
+              {applications.length} Total
+            </div>
+          )}
           {SUMMARY_STATUSES.map((s) => {
             const colors = STATUS_COLORS[s];
             const count = counts[s];
@@ -107,11 +109,6 @@ export function DashboardHeader({ applications }: Props) {
               </div>
             );
           })}
-          {applications.length > 0 && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium border shrink-0 ml-1 border-slate-200 bg-slate-50 text-slate-500 dark:border-[#2a3357] dark:bg-[#111827] dark:text-gray-600">
-              {applications.length} Total
-            </div>
-          )}
         </div>
 
         {/* Theme toggle */}

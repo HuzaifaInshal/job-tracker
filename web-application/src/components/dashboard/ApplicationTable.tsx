@@ -140,7 +140,8 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
           a.companyName.toLowerCase().includes(q) ||
           a.jobTitle.toLowerCase().includes(q) ||
           a.hrCompanyName?.toLowerCase().includes(q) ||
-          a.channelOther?.toLowerCase().includes(q)
+          a.channelOther?.toLowerCase().includes(q) ||
+          a.contactLink?.toLowerCase().includes(q)
       );
     if (statusFilter !== "all")
       items = items.filter((a) => a.status === statusFilter);

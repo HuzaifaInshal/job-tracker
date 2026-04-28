@@ -1,12 +1,17 @@
 import { cn } from "@/lib/utils";
 import { forwardRef, type TextareaHTMLAttributes } from "react";
+import { handlePasteNormalize } from "./input";
 
 const Textarea = forwardRef<
   HTMLTextAreaElement,
   TextareaHTMLAttributes<HTMLTextAreaElement>
->(({ className, ...props }, ref) => (
+>(({ className, onPaste, ...props }, ref) => (
   <textarea
     ref={ref}
+    onPaste={(e) => {
+      handlePasteNormalize(e as never);
+      onPaste?.(e);
+    }}
     className={cn(
       "w-full rounded-lg border px-3 py-2 text-base resize-none transition-colors duration-150",
       "border-slate-200 bg-white text-slate-900 placeholder:text-gray-400",

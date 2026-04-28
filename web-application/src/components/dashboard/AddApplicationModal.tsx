@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { createApplication, updateApplication } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
+import { normalizeUnicode } from "@/components/ui/input";
 import type {
   Application,
   ApplicationChannel,
@@ -93,7 +94,7 @@ export function AddApplicationModal({
 
   function set(field: string, value: string) {
     setForm((prev) => {
-      const next = { ...prev, [field]: value };
+      const next = { ...prev, [field]: normalizeUnicode(value) };
       if (field === "postedBy" && value === "company" && !next.hrCompanyName) {
         next.hrCompanyName = next.companyName;
       }
