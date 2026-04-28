@@ -27,6 +27,7 @@ import {
 import { formatDate } from "@/lib/utils";
 import { bulkMarkExpired, bulkSetArchived } from "@/lib/firestore";
 import { useToast } from "@/components/ui/toast";
+import { useAllTimelines } from "@/hooks/useAllTimelines";
 import { Loader2 } from "lucide-react";
 import {
   Search,
@@ -73,6 +74,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
   const [applyTypeFilter, setApplyTypeFilter] = useState<ApplyType | "all">(
     "all"
   );
+  const [timelineStatusFilter, setTimelineStatusFilter] = useState<ApplicationStatus | "all">("all");
   const [dateFrom, setDateFrom] = useState("");
   const [dateTo, setDateTo] = useState("");
   const [sortField, setSortField] = useState<SortField>("appliedAt");
@@ -87,6 +89,19 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
   const [markingExpired, setMarkingExpired] = useState(false);
   const [archiving, setArchiving] = useState(false);
   const { toast } = useToast();
+
+  const appIds = useMemo(() => applications.map((a) => a.id), [applications]);
+  const { timelines } = useAllTimelines(appIds);
+
+  // Set of appIds that ever had a given timeline statusUpdate
+  const timelineStatusAppIds = useMemo(() => {
+    if (timelineStatusFilter === "all") return null;
+    return new Set(
+      timelines
+        .filter((t) => t.statusUpdate === timelineStatusFilter)
+        .map((t) => t.applicationId)
+    );
+  }, [timelines, timelineStatusFilter]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -117,6 +132,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
     setStatusFilter("all");
     setChannelFilter("all");
     setApplyTypeFilter("all");
+    setTimelineStatusFilter("all");
     setDateFrom("");
     setDateTo("");
     setPage(1);
@@ -128,6 +144,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
     statusFilter !== "all" ||
     channelFilter !== "all" ||
     applyTypeFilter !== "all" ||
+    timelineStatusFilter !== "all" ||
     dateFrom ||
     dateTo;
 
@@ -149,6 +166,8 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
       items = items.filter((a) => a.channel === channelFilter);
     if (applyTypeFilter !== "all")
       items = items.filter((a) => a.applyType === applyTypeFilter);
+    if (timelineStatusAppIds !== null)
+      items = items.filter((a) => timelineStatusAppIds.has(a.id));
     if (dateFrom)
       items = items.filter((a) => a.appliedAt >= new Date(dateFrom));
     if (dateTo) {
@@ -177,7 +196,8 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
     dateFrom,
     dateTo,
     sortField,
-    sortDir
+    sortDir,
+    timelineStatusAppIds
   ]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
@@ -320,6 +340,23 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               <SelectItem value="external">External</SelectItem>
               <SelectItem value="email">Email</SelectItem>
               <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={timelineStatusFilter}
+            onValueChange={(v) => {
+              setTimelineStatusFilter(v as ApplicationStatus | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-44 h-11">
+              <SelectValue placeholder="Timeline Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Timeline Status</SelectItem>
+              {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
+                <SelectItem key={s} value={s}>{STATUS_LABELS[s]} (timeline)</SelectItem>
+              ))}
             </SelectContent>
           </Select>
           {hasFilters && (

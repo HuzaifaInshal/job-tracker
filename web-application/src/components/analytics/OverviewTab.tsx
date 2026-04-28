@@ -39,6 +39,8 @@ const tooltipStyle = {
     color: "#e2e8f0",
     fontSize: 13,
   },
+  labelStyle: { color: "#e2e8f0", fontWeight: 600, marginBottom: 2 },
+  itemStyle: { color: "#94a3b8" },
   cursor: { fill: "rgba(255,255,255,0.04)" },
 };
 

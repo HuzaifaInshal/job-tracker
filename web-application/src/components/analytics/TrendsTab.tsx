@@ -20,6 +20,8 @@ const DAY_COLORS = ["#3b82f6", "#6366f1", "#8b5cf6", "#a855f7", "#22d3ee", "#34d
 
 const tooltipStyle = {
   contentStyle: { background: "#0d1120", border: "1px solid #1e2d45", borderRadius: "10px", color: "#e2e8f0", fontSize: 13 },
+  labelStyle: { color: "#e2e8f0", fontWeight: 600, marginBottom: 2 },
+  itemStyle: { color: "#94a3b8" },
   cursor: { fill: "rgba(255,255,255,0.04)" },
 };
 
