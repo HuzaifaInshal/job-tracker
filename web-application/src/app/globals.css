@@ -10,6 +10,13 @@
 }
 
 :root {
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-card: #ffffff;
+  --border: #e2e8f0;
+}
+
+.dark {
   --bg-base: #080b12;
   --bg-surface: #0d1120;
   --bg-card: #111827;
@@ -22,10 +29,14 @@ html { background: var(--bg-base); }
 
 body {
   background: var(--bg-base);
-  color: #e2e8f0;
+  color: #1e293b;
   font-family: var(--font-plus-jakarta), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.dark body, body:where(.dark *) {
+  color: #e2e8f0;
 }
 
 /* Scrollbar */
@@ -71,6 +82,18 @@ body {
   from { transform: translateX(-50%); }
   to { transform: translateX(0); }
 }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-5px); }
+}
 
 /* Utility classes */
 .font-display { font-family: var(--font-syne), system-ui, sans-serif; }
@@ -79,6 +102,15 @@ body {
 .animate-spin-slow { animation: spin-slow 12s linear infinite; }
 .animate-marquee { animation: marquee 35s linear infinite; }
 .animate-marquee-reverse { animation: marquee-reverse 35s linear infinite; }
+.animate-float { animation: float 4s ease-in-out infinite; }
+.animate-float-slow { animation: float-slow 6s ease-in-out infinite; }
+
+.animate-fade-up { animation: fade-up 0.5s ease both; }
+.animate-fade-up-1 { animation: fade-up 0.5s 0ms ease both; }
+.animate-fade-up-2 { animation: fade-up 0.5s 80ms ease both; }
+.animate-fade-up-3 { animation: fade-up 0.5s 160ms ease both; }
+.animate-fade-up-4 { animation: fade-up 0.5s 240ms ease both; }
+.animate-fade-up-5 { animation: fade-up 0.5s 320ms ease both; }
 
 .text-shimmer {
   background: linear-gradient(
@@ -99,6 +131,12 @@ body {
 
 .gradient-border {
   position: relative;
+  background: linear-gradient(#ffffff, #ffffff) padding-box,
+    linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) border-box;
+  border: 1px solid transparent;
+}
+
+.dark .gradient-border {
   background: linear-gradient(#0f1428, #0f1428) padding-box,
     linear-gradient(135deg, #3b82f6, #6366f1, #8b5cf6) border-box;
   border: 1px solid transparent;

@@ -81,7 +81,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="h-full bg-slate-50 dark:bg-[#080b12] transition-colors duration-200">
+      <body className="h-full bg-[var(--bg-base)] transition-colors duration-200">
         <ThemeProvider>
           <AuthProvider>
             <ToastProvider>{children}</ToastProvider>
