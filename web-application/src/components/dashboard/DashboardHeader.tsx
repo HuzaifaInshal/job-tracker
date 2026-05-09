@@ -43,53 +43,56 @@ export function DashboardHeader({ applications }: Props) {
 
   return (
     <header className="border-b sticky top-0 z-30 backdrop-blur-sm border-slate-200 bg-white/90 dark:border-[#1e2d45] dark:bg-[#080b12]/95">
-      <div className="flex items-center gap-4 px-6 h-14">
+      <div className="flex items-center gap-2 sm:gap-4 px-3 sm:px-6 h-14">
         {/* Brand */}
-        <div className="flex items-center gap-2 mr-4">
-          <div className="h-9 w-9 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
+        <div className="flex items-center gap-2 shrink-0">
+          <div className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-600/10 border border-blue-500/20 flex items-center justify-center">
             <Briefcase className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
           </div>
-          <span className="font-bold text-slate-800 text-base tracking-tight dark:text-slate-200">
+          <span className="font-bold text-slate-800 text-sm sm:text-base tracking-tight dark:text-slate-200 hidden xs:block">
             JobTrack
           </span>
         </div>
 
         {/* Nav */}
-        <div className="flex items-center gap-1 mr-3">
+        <div className="flex items-center gap-0.5 sm:gap-1">
           <Link
             href="/dashboard"
-            className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-              !isArchived
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              !isArchived && !isAnalytics
                 ? "bg-slate-100 text-slate-700 dark:bg-[#1e2540] dark:text-slate-200"
                 : "text-slate-500 hover:bg-slate-100 dark:text-gray-600 dark:hover:bg-[#1a2035]"
             }`}
           >
-            Applications
+            <Briefcase className="h-3.5 w-3.5 sm:hidden" />
+            <span className="hidden sm:inline">Applications</span>
           </Link>
           <Link
             href="/dashboard/archived"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               isArchived
                 ? "bg-slate-100 text-slate-700 dark:bg-[#1e2540] dark:text-slate-200"
                 : "text-slate-500 hover:bg-slate-100 dark:text-gray-600 dark:hover:bg-[#1a2035]"
             }`}
           >
-            <Archive className="h-3.5 w-3.5" /> Archived
+            <Archive className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Archived</span>
           </Link>
           <Link
             href="/dashboard/analytics"
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
               isAnalytics
                 ? "bg-slate-100 text-slate-700 dark:bg-[#1e2540] dark:text-slate-200"
                 : "text-slate-500 hover:bg-slate-100 dark:text-gray-600 dark:hover:bg-[#1a2035]"
             }`}
           >
-            <BarChart2 className="h-3.5 w-3.5" /> Analytics
+            <BarChart2 className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Analytics</span>
           </Link>
         </div>
 
-        {/* Stats */}
-        <div className="flex items-center gap-1 flex-1 overflow-x-auto scrollbar-none">
+        {/* Stats — hidden on mobile */}
+        <div className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto scrollbar-none">
           {applications.length > 0 && (
             <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-sm font-medium border shrink-0 border-slate-200 bg-slate-50 text-slate-500 dark:border-[#2a3357] dark:bg-[#111827] dark:text-gray-600">
               {applications.length} Total
@@ -110,6 +113,7 @@ export function DashboardHeader({ applications }: Props) {
             );
           })}
         </div>
+        <div className="flex-1 md:hidden" />
 
         {/* Theme toggle */}
         <ThemeToggle />
@@ -117,8 +121,8 @@ export function DashboardHeader({ applications }: Props) {
         {/* User menu */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button className="flex items-center gap-2 rounded-xl px-2.5 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-[#111827] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40">
-              <Avatar.Root className="h-9 w-9 rounded-lg overflow-hidden border border-slate-200 dark:border-[#2a3357]">
+            <button className="flex items-center gap-1.5 sm:gap-2 rounded-xl px-1.5 sm:px-2.5 py-1.5 transition-colors hover:bg-slate-100 dark:hover:bg-[#111827] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500/40">
+              <Avatar.Root className="h-8 w-8 sm:h-9 sm:w-9 rounded-lg overflow-hidden border border-slate-200 dark:border-[#2a3357] shrink-0">
                 <Avatar.Image
                   src={user?.photoURL ?? undefined}
                   alt={user?.displayName ?? ""}
@@ -128,10 +132,10 @@ export function DashboardHeader({ applications }: Props) {
                   {initials}
                 </Avatar.Fallback>
               </Avatar.Root>
-              <span className="text-base text-slate-600 max-w-[140px] truncate hidden sm:block dark:text-gray-600">
+              <span className="text-sm text-slate-600 max-w-[100px] truncate hidden lg:block dark:text-gray-600">
                 {user?.displayName ?? user?.email}
               </span>
-              <ChevronDown className="h-3.5 w-3.5 text-gray-600" />
+              <ChevronDown className="h-3.5 w-3.5 text-gray-600 hidden sm:block" />
             </button>
           </DropdownMenu.Trigger>
 
@@ -151,7 +155,7 @@ export function DashboardHeader({ applications }: Props) {
               </div>
               <DropdownMenu.Item
                 onClick={logout}
-                className="flex items-center gap-2 px-2 py-2 text-base rounded-lg cursor-pointer transition-colors focus:outline-none text-slate-600 hover:bg-slate-50 hover:text-red-600 dark:text-gray-600 dark:hover:bg-[#1e2540] dark:hover:text-red-400"
+                className="flex items-center gap-2 px-2 py-2 text-sm rounded-lg cursor-pointer transition-colors focus:outline-none text-slate-600 hover:bg-slate-50 hover:text-red-600 dark:text-gray-600 dark:hover:bg-[#1e2540] dark:hover:text-red-400"
               >
                 <LogOut className="h-4 w-4" />
                 Sign Out

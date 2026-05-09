@@ -272,11 +272,12 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
   }
 
   return (
-    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-10 pt-3 border border-gray-200 dark:border-[#1e2d45] bg-white/90 dark:bg-black shadow rounded-lg">
+    <div className="flex flex-col h-full max-h-[85dvh] container mx-auto my-4 sm:my-10 pt-3 border border-gray-200 dark:border-[#1e2d45] bg-white/90 dark:bg-black shadow rounded-lg">
       {/* Toolbar */}
-      <div className="px-6 py-4 border-b space-y-3 border-slate-200 dark:border-[#1e2d45]">
-        <div className="flex items-center gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-[180px] max-w-xs">
+      <div className="px-3 sm:px-6 py-3 sm:py-4 border-b space-y-3 border-slate-200 dark:border-[#1e2d45]">
+        {/* Row 1: search + action buttons */}
+        <div className="flex items-center gap-2 flex-wrap">
+          <div className="relative flex-1 min-w-[140px]">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-600" />
             <Input
               placeholder="Search company, role…"
@@ -288,83 +289,13 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               className="pl-9"
             />
           </div>
-          <Select
-            value={statusFilter}
-            onValueChange={(v) => {
-              setStatusFilter(v as ApplicationStatus | "all");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40 h-11">
-              <SelectValue placeholder="All Statuses" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Statuses</SelectItem>
-              {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
-                <SelectItem key={s} value={s}>
-                  {STATUS_LABELS[s]}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          <Select
-            value={channelFilter}
-            onValueChange={(v) => {
-              setChannelFilter(v as ApplicationChannel | "all");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40 h-11">
-              <SelectValue placeholder="Channel" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Channels</SelectItem>
-              <SelectItem value="indeed">Indeed</SelectItem>
-              <SelectItem value="linkedin">LinkedIn</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select
-            value={applyTypeFilter}
-            onValueChange={(v) => {
-              setApplyTypeFilter(v as ApplyType | "all");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-40 h-11">
-              <SelectValue placeholder="Apply Type" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All Types</SelectItem>
-              <SelectItem value="direct">Direct Apply</SelectItem>
-              <SelectItem value="external">External</SelectItem>
-              <SelectItem value="email">Email</SelectItem>
-              <SelectItem value="other">Other</SelectItem>
-            </SelectContent>
-          </Select>
-          <Select
-            value={timelineStatusFilter}
-            onValueChange={(v) => {
-              setTimelineStatusFilter(v as ApplicationStatus | "all");
-              setPage(1);
-            }}
-          >
-            <SelectTrigger className="w-44 h-11">
-              <SelectValue placeholder="Timeline Status" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">Any Timeline Status</SelectItem>
-              {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
-                <SelectItem key={s} value={s}>{STATUS_LABELS[s]} (timeline)</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
           {hasFilters && (
             <Button variant="ghost" size="sm" onClick={clearFilters}>
-              <X className="h-3.5 w-3.5" /> Clear
+              <X className="h-3.5 w-3.5" />
+              <span className="hidden sm:inline">Clear</span>
             </Button>
           )}
-          <div className="ml-auto flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
             {!isArchived && (
               <div className="relative" ref={bulkDropdownRef}>
                 <div className="flex items-center">
@@ -373,7 +304,8 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
                     className="rounded-r-none border-r-0"
                     onClick={() => { setBulkAddMode("full"); setBulkAddOpen(true); }}
                   >
-                    <Layers className="h-4 w-4" /> Bulk Add
+                    <Layers className="h-4 w-4" />
+                    <span className="hidden sm:inline">Bulk Add</span>
                   </Button>
                   <Button
                     variant="secondary"
@@ -405,14 +337,90 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
             )}
             {!isArchived && (
               <Button variant="primary" onClick={() => setAddOpen(true)}>
-                <Plus className="h-4 w-4" /> Add Application
+                <Plus className="h-4 w-4" />
+                <span className="hidden sm:inline">Add Application</span>
               </Button>
             )}
           </div>
         </div>
-        <div className="flex items-center gap-3">
+        {/* Row 2: filters */}
+        <div className="flex flex-wrap gap-2">
+          <Select
+            value={statusFilter}
+            onValueChange={(v) => {
+              setStatusFilter(v as ApplicationStatus | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-36 sm:w-40 h-9 sm:h-11 text-sm">
+              <SelectValue placeholder="All Statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Statuses</SelectItem>
+              {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
+                <SelectItem key={s} value={s}>
+                  {STATUS_LABELS[s]}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Select
+            value={channelFilter}
+            onValueChange={(v) => {
+              setChannelFilter(v as ApplicationChannel | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-32 sm:w-40 h-9 sm:h-11 text-sm">
+              <SelectValue placeholder="Channel" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Channels</SelectItem>
+              <SelectItem value="indeed">Indeed</SelectItem>
+              <SelectItem value="linkedin">LinkedIn</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={applyTypeFilter}
+            onValueChange={(v) => {
+              setApplyTypeFilter(v as ApplyType | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-32 sm:w-40 h-9 sm:h-11 text-sm">
+              <SelectValue placeholder="Apply Type" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All Types</SelectItem>
+              <SelectItem value="direct">Direct Apply</SelectItem>
+              <SelectItem value="external">External</SelectItem>
+              <SelectItem value="email">Email</SelectItem>
+              <SelectItem value="other">Other</SelectItem>
+            </SelectContent>
+          </Select>
+          <Select
+            value={timelineStatusFilter}
+            onValueChange={(v) => {
+              setTimelineStatusFilter(v as ApplicationStatus | "all");
+              setPage(1);
+            }}
+          >
+            <SelectTrigger className="w-36 sm:w-44 h-9 sm:h-11 text-sm">
+              <SelectValue placeholder="Timeline Status" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Any Timeline Status</SelectItem>
+              {(Object.keys(STATUS_LABELS) as ApplicationStatus[]).map((s) => (
+                <SelectItem key={s} value={s}>{STATUS_LABELS[s]} (timeline)</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        {/* Row 3: date range */}
+        <div className="flex flex-wrap items-center gap-2">
           <SlidersHorizontal className="h-4 w-4 text-gray-600 shrink-0" />
-          <span className="text-sm text-gray-600">Date range:</span>
+          <span className="text-sm text-gray-600 hidden sm:inline">Date range:</span>
           <Input
             type="date"
             value={dateFrom}
@@ -420,7 +428,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               setDateFrom(e.target.value);
               setPage(1);
             }}
-            className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
+            className="w-36 sm:w-40 h-9 sm:h-11 text-sm [color-scheme:light] dark:[color-scheme:dark]"
           />
           <span className="text-sm text-gray-600">to</span>
           <Input
@@ -430,17 +438,17 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               setDateTo(e.target.value);
               setPage(1);
             }}
-            className="w-40 h-11 text-base [color-scheme:light] dark:[color-scheme:dark]"
+            className="w-36 sm:w-40 h-9 sm:h-11 text-sm [color-scheme:light] dark:[color-scheme:dark]"
           />
           <span className="ml-auto text-sm text-gray-600">
-            {filtered.length} application{filtered.length !== 1 ? "s" : ""}
+            {filtered.length} app{filtered.length !== 1 ? "s" : ""}
           </span>
         </div>
       </div>
 
       {/* Bulk action bar */}
       {selected.size > 0 && (
-        <div className="mx-6 mt-3 flex items-center gap-3 px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-500/30">
+        <div className="mx-3 sm:mx-6 mt-3 flex flex-wrap items-center gap-2 px-3 sm:px-4 py-2.5 rounded-lg bg-blue-50 border border-blue-200 dark:bg-blue-950/30 dark:border-blue-500/30">
           <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
             {selected.size} selected
           </span>
@@ -456,7 +464,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               ) : (
                 <Clock className="h-3.5 w-3.5" />
               )}
-              Mark as Expired
+              <span className="hidden sm:inline">Mark as </span>Expired
             </Button>
           )}
           <Button
@@ -479,15 +487,16 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
             variant="ghost"
             onClick={() => setSelected(new Set())}
           >
-            <X className="h-3.5 w-3.5" /> Clear
+            <X className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">Clear</span>
           </Button>
         </div>
       )}
 
-      {/* Table */}
+      {/* Table / Cards */}
       <div className="flex-1 overflow-auto">
         {loading ? (
-          <div className="p-6 space-y-2">
+          <div className="p-4 sm:p-6 space-y-2">
             {Array.from({ length: 6 }).map((_, i) => (
               <div
                 key={i}
@@ -503,268 +512,243 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
             onClear={clearFilters}
           />
         ) : (
-          <table className="w-full min-w-[1400px]">
-            <thead className="sticky top-0 z-10">
-              <tr className="border-b border-slate-200 bg-slate-50 dark:border-[#1e2d45] dark:bg-[#0b0e1a]">
-                <th className="w-10 px-4 py-3">
-                  <input
-                    type="checkbox"
-                    checked={allPageSelected}
-                    onChange={toggleSelectAll}
-                    className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
-                  />
-                </th>
-                <Th onClick={() => toggleSort("status")}>
-                  Status <SortIcon field="status" />
-                </Th>
-                <Th onClick={() => toggleSort("companyName")}>
-                  Company <SortIcon field="companyName" />
-                </Th>
-                <Th onClick={() => toggleSort("jobTitle")}>
-                  Job Title <SortIcon field="jobTitle" />
-                </Th>
-                <Th>Channel</Th>
-                <Th>Apply Type</Th>
-                <Th onClick={() => toggleSort("appliedAt")}>
-                  Applied <SortIcon field="appliedAt" />
-                </Th>
-                <Th>Contact</Th>
-                <Th>Posted By</Th>
-                <Th>HR / Company</Th>
-                <Th>HR Link</Th>
-                <Th>Social Post</Th>
-                <Th>Notes</Th>
-              </tr>
-            </thead>
-            <tbody>
+          <>
+            {/* Desktop table */}
+            <div className="hidden md:block">
+              <table className="w-full min-w-[1400px]">
+                <thead className="sticky top-0 z-10">
+                  <tr className="border-b border-slate-200 bg-slate-50 dark:border-[#1e2d45] dark:bg-[#0b0e1a]">
+                    <th className="w-10 px-4 py-3">
+                      <input
+                        type="checkbox"
+                        checked={allPageSelected}
+                        onChange={toggleSelectAll}
+                        className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                      />
+                    </th>
+                    <Th onClick={() => toggleSort("status")}>
+                      Status <SortIcon field="status" />
+                    </Th>
+                    <Th onClick={() => toggleSort("companyName")}>
+                      Company <SortIcon field="companyName" />
+                    </Th>
+                    <Th onClick={() => toggleSort("jobTitle")}>
+                      Job Title <SortIcon field="jobTitle" />
+                    </Th>
+                    <Th>Channel</Th>
+                    <Th>Apply Type</Th>
+                    <Th onClick={() => toggleSort("appliedAt")}>
+                      Applied <SortIcon field="appliedAt" />
+                    </Th>
+                    <Th>Contact</Th>
+                    <Th>Posted By</Th>
+                    <Th>HR / Company</Th>
+                    <Th>HR Link</Th>
+                    <Th>Social Post</Th>
+                    <Th>Notes</Th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginated.map((app) => (
+                    <tr
+                      key={app.id}
+                      onClick={() => openApp(app)}
+                      className={`border-b cursor-pointer group transition-colors duration-100 border-slate-100 dark:border-[#1a2035]/60 ${
+                        selected.has(app.id)
+                          ? "bg-blue-100/80 dark:bg-blue-950/30"
+                          : app.status === "need_immediate_attention"
+                            ? "bg-orange-50/70 hover:bg-orange-100/80 dark:bg-orange-950/20 dark:hover:bg-orange-950/40"
+                            : app.status === "rejected"
+                              ? "bg-red-50/80 hover:bg-red-100/80 dark:bg-red-950/20 dark:hover:bg-red-950/40"
+                              : app.status === "accepted"
+                                ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
+                                : app.status === "disputed"
+                                  ? "bg-purple-50/70 hover:bg-purple-100/80 dark:bg-purple-950/20 dark:hover:bg-purple-950/40"
+                                  : app.status === "responded"
+                                    ? "bg-cyan-50/70 hover:bg-cyan-100/80 dark:bg-cyan-950/20 dark:hover:bg-cyan-950/40"
+                                    : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
+                      }`}
+                    >
+                      <td
+                        className="w-10 px-4 py-3.5"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        <input
+                          type="checkbox"
+                          checked={selected.has(app.id)}
+                          onChange={() => toggleSelect(app.id)}
+                          className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                        />
+                      </td>
+                      <Td><StatusBadge status={app.status} /></Td>
+                      <Td>
+                        <Tooltip content={app.companyName} copyText={app.companyName}>
+                          <div className="flex items-center gap-2.5">
+                            <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
+                              <Building2 className="h-3.5 w-3.5 text-gray-600" />
+                            </div>
+                            <span className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[140px]">
+                              {app.companyName}
+                            </span>
+                          </div>
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        <Tooltip content={app.jobTitle} copyText={app.jobTitle}>
+                          <span className="text-slate-600 dark:text-gray-400 truncate max-w-[160px] block">
+                            {app.jobTitle}
+                          </span>
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        {(() => {
+                          const label = app.channel === "other" && app.channelOther ? app.channelOther : CHANNEL_LABELS[app.channel];
+                          return (
+                            <Tooltip content={label} copyText={label}>
+                              <span className="text-sm font-medium rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-400 dark:border-[#2a3357] whitespace-nowrap">
+                                {label}
+                              </span>
+                            </Tooltip>
+                          );
+                        })()}
+                      </Td>
+                      <Td>
+                        {(() => {
+                          const label = app.applyType === "other" && app.applyTypeOther ? app.applyTypeOther : APPLY_TYPE_LABELS[app.applyType];
+                          return (
+                            <Tooltip content={label} copyText={label}>
+                              <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">{label}</span>
+                            </Tooltip>
+                          );
+                        })()}
+                      </Td>
+                      <Td>
+                        <Tooltip content={formatDate(app.appliedAt)} copyText={formatDate(app.appliedAt)}>
+                          <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">{formatDate(app.appliedAt)}</span>
+                        </Tooltip>
+                      </Td>
+                      <Td>
+                        {app.contactLink ? (
+                          <Tooltip content={app.contactLink} copyText={app.contactLink}>
+                            <a href={app.contactLink.startsWith("http") || app.contactLink.startsWith("mailto") ? app.contactLink : `https://${app.contactLink}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block">{app.contactLink}</a>
+                          </Tooltip>
+                        ) : <Dash />}
+                      </Td>
+                      <Td>
+                        {(() => {
+                          const label = app.postedBy === "hr" ? "HR / Recruiter" : app.postedBy === "company" ? "Company" : null;
+                          return label ? (
+                            <Tooltip content={label} copyText={label}>
+                              <span className="whitespace-nowrap text-slate-500 dark:text-slate-400">{label}</span>
+                            </Tooltip>
+                          ) : <Dash />;
+                        })()}
+                      </Td>
+                      <Td>
+                        {app.hrCompanyName ? (
+                          <Tooltip content={app.hrCompanyName} copyText={app.hrCompanyName}>
+                            <span className="truncate max-w-[120px] block text-slate-500 dark:text-slate-400">{app.hrCompanyName}</span>
+                          </Tooltip>
+                        ) : <Dash />}
+                      </Td>
+                      <Td>
+                        {app.hrCompanyLink ? (
+                          <Tooltip content={app.hrCompanyLink} copyText={app.hrCompanyLink}>
+                            <a href={app.hrCompanyLink.startsWith("http") ? app.hrCompanyLink : `https://${app.hrCompanyLink}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block">{app.hrCompanyLink}</a>
+                          </Tooltip>
+                        ) : <Dash />}
+                      </Td>
+                      <Td>
+                        {app.socialPostLink ? (
+                          <Tooltip content={app.socialPostLink} copyText={app.socialPostLink}>
+                            <a href={app.socialPostLink.startsWith("http") ? app.socialPostLink : `https://${app.socialPostLink}`} target="_blank" rel="noopener noreferrer" onClick={(e) => e.stopPropagation()} className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block">{app.socialPostLink}</a>
+                          </Tooltip>
+                        ) : <Dash />}
+                      </Td>
+                      <Td>
+                        {app.extraNotes ? (
+                          <Tooltip content={app.extraNotes} copyText={app.extraNotes}>
+                            <span className="truncate max-w-[150px] block text-slate-500 dark:text-slate-400">{app.extraNotes}</span>
+                          </Tooltip>
+                        ) : <Dash />}
+                      </Td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Mobile cards */}
+            <div className="md:hidden divide-y divide-slate-100 dark:divide-[#1a2035]/60">
               {paginated.map((app) => (
-                <tr
+                <div
                   key={app.id}
                   onClick={() => openApp(app)}
-                  className={`border-b cursor-pointer group transition-colors duration-100 border-slate-100 dark:border-[#1a2035]/60 ${
+                  className={`px-3 py-3 cursor-pointer transition-colors ${
                     selected.has(app.id)
-                      ? "bg-blue-100/80 dark:bg-blue-950/30"
+                      ? "bg-blue-50 dark:bg-blue-950/30"
                       : app.status === "need_immediate_attention"
-                        ? "bg-orange-50/70 hover:bg-orange-100/80 dark:bg-orange-950/20 dark:hover:bg-orange-950/40"
+                        ? "bg-orange-50/70 dark:bg-orange-950/20"
                         : app.status === "rejected"
-                          ? "bg-red-50/80 hover:bg-red-100/80 dark:bg-red-950/20 dark:hover:bg-red-950/40"
+                          ? "bg-red-50/80 dark:bg-red-950/20"
                           : app.status === "accepted"
-                            ? "bg-blue-50/70 hover:bg-blue-100/80 dark:bg-blue-950/20 dark:hover:bg-blue-950/40"
+                            ? "bg-blue-50/70 dark:bg-blue-950/20"
                             : app.status === "disputed"
-                              ? "bg-purple-50/70 hover:bg-purple-100/80 dark:bg-purple-950/20 dark:hover:bg-purple-950/40"
+                              ? "bg-purple-50/70 dark:bg-purple-950/20"
                               : app.status === "responded"
-                                ? "bg-cyan-50/70 hover:bg-cyan-100/80 dark:bg-cyan-950/20 dark:hover:bg-cyan-950/40"
-                                : "hover:bg-slate-50/80 dark:hover:bg-[#111827]"
+                                ? "bg-cyan-50/70 dark:bg-cyan-950/20"
+                                : "hover:bg-slate-50 dark:hover:bg-[#111827]"
                   }`}
                 >
-                  <td
-                    className="w-10 px-4 py-3.5"
-                    onClick={(e) => e.stopPropagation()}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={selected.has(app.id)}
-                      onChange={() => toggleSelect(app.id)}
-                      className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
-                    />
-                  </td>
-                  <Td>
-                    <StatusBadge status={app.status} />
-                  </Td>
-                  <Td>
-                    <Tooltip
-                      content={app.companyName}
-                      copyText={app.companyName}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <div className="h-8 w-8 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
-                          <Building2 className="h-3.5 w-3.5 text-gray-600" />
+                  <div className="flex items-start gap-3">
+                    <div onClick={(e) => e.stopPropagation()} className="pt-0.5 shrink-0">
+                      <input
+                        type="checkbox"
+                        checked={selected.has(app.id)}
+                        onChange={() => toggleSelect(app.id)}
+                        className="h-4 w-4 rounded border-slate-300 accent-blue-600 cursor-pointer"
+                      />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <div className="h-7 w-7 rounded-lg flex items-center justify-center shrink-0 bg-slate-100 border border-slate-200 dark:bg-[#1e2540] dark:border-[#2a3357]">
+                            <Building2 className="h-3 w-3 text-gray-600" />
+                          </div>
+                          <span className="font-semibold text-sm text-slate-800 dark:text-slate-200 truncate">
+                            {app.companyName}
+                          </span>
                         </div>
-                        <span className="font-medium text-slate-800 dark:text-slate-200 truncate max-w-[140px]">
-                          {app.companyName}
+                        <StatusBadge status={app.status} />
+                      </div>
+                      <p className="text-sm text-slate-500 dark:text-slate-400 truncate mb-1.5">
+                        {app.jobTitle}
+                      </p>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                        <span className="text-xs text-slate-400 dark:text-slate-500">
+                          {formatDate(app.appliedAt)}
+                        </span>
+                        <span className="text-xs font-medium rounded px-1.5 py-0.5 bg-slate-100 text-slate-500 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-500 dark:border-[#2a3357]">
+                          {app.channel === "other" && app.channelOther ? app.channelOther : CHANNEL_LABELS[app.channel]}
+                        </span>
+                        <span className="text-xs text-slate-400 dark:text-slate-500">
+                          {app.applyType === "other" && app.applyTypeOther ? app.applyTypeOther : APPLY_TYPE_LABELS[app.applyType]}
                         </span>
                       </div>
-                    </Tooltip>
-                  </Td>
-                  <Td>
-                    <Tooltip content={app.jobTitle} copyText={app.jobTitle}>
-                      <span className="text-slate-600 dark:text-gray-400 truncate max-w-[160px] block">
-                        {app.jobTitle}
-                      </span>
-                    </Tooltip>
-                  </Td>
-                  <Td>
-                    {(() => {
-                      const label =
-                        app.channel === "other" && app.channelOther
-                          ? app.channelOther
-                          : CHANNEL_LABELS[app.channel];
-                      return (
-                        <Tooltip content={label} copyText={label}>
-                          <span className="text-sm font-medium rounded px-2 py-0.5 bg-slate-100 text-slate-600 border border-slate-200 dark:bg-[#1e2540] dark:text-gray-400 dark:border-[#2a3357] whitespace-nowrap">
-                            {label}
-                          </span>
-                        </Tooltip>
-                      );
-                    })()}
-                  </Td>
-                  <Td>
-                    {(() => {
-                      const label =
-                        app.applyType === "other" && app.applyTypeOther
-                          ? app.applyTypeOther
-                          : APPLY_TYPE_LABELS[app.applyType];
-                      return (
-                        <Tooltip content={label} copyText={label}>
-                          <span className="text-slate-500 dark:text-slate-400 whitespace-nowrap">
-                            {label}
-                          </span>
-                        </Tooltip>
-                      );
-                    })()}
-                  </Td>
-                  <Td>
-                    <Tooltip
-                      content={formatDate(app.appliedAt)}
-                      copyText={formatDate(app.appliedAt)}
-                    >
-                      <span className="text-gray-600 dark:text-slate-400 whitespace-nowrap">
-                        {formatDate(app.appliedAt)}
-                      </span>
-                    </Tooltip>
-                  </Td>
-                  <Td>
-                    {app.contactLink ? (
-                      <Tooltip
-                        content={app.contactLink}
-                        copyText={app.contactLink}
-                      >
-                        <a
-                          href={
-                            app.contactLink.startsWith("http") ||
-                            app.contactLink.startsWith("mailto")
-                              ? app.contactLink
-                              : `https://${app.contactLink}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
-                        >
-                          {app.contactLink}
-                        </a>
-                      </Tooltip>
-                    ) : (
-                      <Dash />
-                    )}
-                  </Td>
-                  <Td>
-                    {(() => {
-                      const label =
-                        app.postedBy === "hr"
-                          ? "HR / Recruiter"
-                          : app.postedBy === "company"
-                            ? "Company"
-                            : null;
-                      return label ? (
-                        <Tooltip content={label} copyText={label}>
-                          <span className="whitespace-nowrap text-slate-500 dark:text-slate-400">
-                            {label}
-                          </span>
-                        </Tooltip>
-                      ) : (
-                        <Dash />
-                      );
-                    })()}
-                  </Td>
-                  <Td>
-                    {app.hrCompanyName ? (
-                      <Tooltip
-                        content={app.hrCompanyName}
-                        copyText={app.hrCompanyName}
-                      >
-                        <span className="truncate max-w-[120px] block text-slate-500 dark:text-slate-400">
-                          {app.hrCompanyName}
-                        </span>
-                      </Tooltip>
-                    ) : (
-                      <Dash />
-                    )}
-                  </Td>
-                  <Td>
-                    {app.hrCompanyLink ? (
-                      <Tooltip
-                        content={app.hrCompanyLink}
-                        copyText={app.hrCompanyLink}
-                      >
-                        <a
-                          href={
-                            app.hrCompanyLink.startsWith("http")
-                              ? app.hrCompanyLink
-                              : `https://${app.hrCompanyLink}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
-                        >
-                          {app.hrCompanyLink}
-                        </a>
-                      </Tooltip>
-                    ) : (
-                      <Dash />
-                    )}
-                  </Td>
-                  <Td>
-                    {app.socialPostLink ? (
-                      <Tooltip
-                        content={app.socialPostLink}
-                        copyText={app.socialPostLink}
-                      >
-                        <a
-                          href={
-                            app.socialPostLink.startsWith("http")
-                              ? app.socialPostLink
-                              : `https://${app.socialPostLink}`
-                          }
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          onClick={(e) => e.stopPropagation()}
-                          className="text-blue-600 dark:text-blue-400 hover:underline truncate max-w-[120px] block"
-                        >
-                          {app.socialPostLink}
-                        </a>
-                      </Tooltip>
-                    ) : (
-                      <Dash />
-                    )}
-                  </Td>
-                  <Td>
-                    {app.extraNotes ? (
-                      <Tooltip
-                        content={app.extraNotes}
-                        copyText={app.extraNotes}
-                      >
-                        <span className="truncate max-w-[150px] block text-slate-500 dark:text-slate-400">
-                          {app.extraNotes}
-                        </span>
-                      </Tooltip>
-                    ) : (
-                      <Dash />
-                    )}
-                  </Td>
-                </tr>
+                    </div>
+                  </div>
+                </div>
               ))}
-            </tbody>
-          </table>
+            </div>
+          </>
         )}
       </div>
 
       {/* Pagination */}
       {filtered.length > 0 && (
-        <div className="flex items-center justify-between px-6 py-3 border-t border-slate-200 dark:border-[#1e2d45]">
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 sm:px-6 py-3 border-t border-slate-200 dark:border-[#1e2d45]">
           <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-600">Rows per page:</span>
+            <span className="text-sm text-gray-600 hidden sm:inline">Rows per page:</span>
             <Select
               value={String(pageSize)}
               onValueChange={(v) => {
@@ -772,7 +756,7 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
                 setPage(1);
               }}
             >
-              <SelectTrigger className="w-20 h-8 text-sm">
+              <SelectTrigger className="w-16 sm:w-20 h-8 text-sm">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -784,10 +768,9 @@ export function ApplicationTable({ applications, loading, userId, isArchived = f
               </SelectContent>
             </Select>
           </div>
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <span className="text-sm text-gray-600">
-              {(page - 1) * pageSize + 1}–
-              {Math.min(page * pageSize, filtered.length)} of {filtered.length}
+              {(page - 1) * pageSize + 1}–{Math.min(page * pageSize, filtered.length)} of {filtered.length}
             </span>
             <div className="flex items-center gap-1">
               <Button

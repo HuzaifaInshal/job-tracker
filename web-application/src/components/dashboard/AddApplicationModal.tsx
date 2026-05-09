@@ -180,7 +180,7 @@ export function AddApplicationModal({
 
           <div className="px-6 space-y-5">
             {/* Row 1 */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="company">Company Name *</Label>
                 <Input
@@ -204,7 +204,7 @@ export function AddApplicationModal({
             </div>
 
             {/* Row 2: Channel + Apply Type */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Channel *</Label>
                 <Select
@@ -257,7 +257,7 @@ export function AddApplicationModal({
             </div>
 
             {/* Row 3: Date + Contact Link */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="appliedAt">Date & Time Applied *</Label>
                 <Input
@@ -285,7 +285,7 @@ export function AddApplicationModal({
             </div>
 
             {/* Row 4: Posted By */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label>Posted By</Label>
                 <Select
@@ -313,7 +313,7 @@ export function AddApplicationModal({
             </div>
 
             {/* Row 5: Links */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="hrLink">HR / Company Profile Link</Label>
                 <Input

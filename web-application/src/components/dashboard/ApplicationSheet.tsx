@@ -144,8 +144,8 @@ export function ApplicationSheet({
           title={`${application.jobTitle} · ${application.companyName}`}
         >
           {/* Status bar */}
-          <div className="px-5 py-4 border-b border-slate-100 dark:border-[#1e2d45]">
-            <div className="flex items-center justify-between gap-3">
+          <div className="px-4 sm:px-5 py-4 border-b border-slate-100 dark:border-[#1e2d45]">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <StatusBadge status={application.status} />
               <div className="flex items-center gap-2">
                 <Button
@@ -153,14 +153,15 @@ export function ApplicationSheet({
                   variant="secondary"
                   onClick={() => setEditing(true)}
                 >
-                  <Pencil className="h-3.5 w-3.5" /> Edit
+                  <Pencil className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Edit</span>
                 </Button>
                 <Select
                   value={application.status}
                   onValueChange={(v) => openStatusConfirm(v as ApplicationStatus)}
                   disabled={updatingStatus}
                 >
-                  <SelectTrigger className="h-9 text-sm w-38 border-slate-200 dark:border-[#2a3357]">
+                  <SelectTrigger className="h-9 text-sm w-32 sm:w-38 border-slate-200 dark:border-[#2a3357]">
                     <RefreshCw className="h-3 w-3 text-gray-600 mr-1" />
                     <SelectValue />
                   </SelectTrigger>

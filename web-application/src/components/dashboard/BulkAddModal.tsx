@@ -239,7 +239,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                 {/* Shared fields */}
                 <div className="border border-slate-200 dark:border-[#1e2d45] rounded-xl p-4 space-y-4 bg-slate-50 dark:bg-[#0b0e1a]">
                   <p className="text-sm font-semibold text-slate-600 dark:text-slate-400">Shared Fields (applied to all entries)</p>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label>Channel *</Label>
                       <Select value={sharedChannel} onValueChange={(v) => setSharedChannel(v as ApplicationChannel)}>
@@ -270,7 +270,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                       )}
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label>Date & Time Applied</Label>
                       <Input type="datetime-local" value={sharedAppliedAt} onChange={(e) => setSharedAppliedAt(e.target.value)} className="[color-scheme:dark]" />
@@ -286,7 +286,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                       </Select>
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                       <Label>Contact Link</Label>
                       <Input placeholder="https://... or email" value={sharedContactLink} onChange={(e) => setSharedContactLink(e.target.value)} />
@@ -377,7 +377,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                   {/* Entry fields */}
                   {isOpen && (
                     <div className="px-4 py-4 space-y-4 border-t border-slate-200 dark:border-[#1e2d45]">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label>Company Name *</Label>
                           <Input
@@ -400,7 +400,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label>Channel *</Label>
                           <Select
@@ -460,7 +460,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label>Date & Time Applied *</Label>
                           <Input
@@ -488,7 +488,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label>Posted By</Label>
                           <Select
@@ -516,7 +516,7 @@ export function BulkAddModal({ open, onClose, userId, mode = "full" }: Props) {
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                           <Label>HR / Company Profile Link</Label>
                           <Input
